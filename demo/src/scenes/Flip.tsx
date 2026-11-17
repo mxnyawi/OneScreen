@@ -3,6 +3,7 @@ import {AbsoluteFill, Easing, interpolate, spring, useCurrentFrame, useVideoConf
 import {CameraMotionBlur} from '@remotion/motion-blur';
 import {ArrangementPanel} from '../components/ArrangementPanel';
 import {Camera, keys} from '../components/Camera';
+import {ArrowRightIcon} from '../components/Icons';
 import {Background} from '../components/Background';
 import {CURSOR_W, Desk, LAPTOP, MONITOR, laptopToMonitorY} from '../components/Desk';
 import {Kinetic, words} from '../components/Kinetic';
@@ -27,7 +28,7 @@ const TARGET = {x: MONITOR.x + 520, y: MONITOR.y + 210};
 
 const flipDesk = (width: number, height: number, portrait: boolean, square: boolean) =>
   portrait
-    ? placeDesk(width * 1.08, width / 2, height * 0.47)
+    ? placeDesk(width * 1.08, width / 2, height * 0.44)
     : square
       ? placeDesk(width * 1.04, width / 2, height * 0.6)
       : placeDesk(width * 0.68, width * 0.4, height * 0.58);
@@ -88,12 +89,18 @@ export const Flip: React.FC<{captions?: boolean; sfx?: boolean}> = ({captions = 
 
   // ---- layout
   const desk = flipDesk(width, height, portrait, square);
-  const panelW = portrait ? width * 0.62 : square ? width * 0.34 : width * 0.26;
+  const panelW = portrait ? width * 0.62 : square ? width * 0.34 : width * 0.28;
   const panelPos = portrait
-    ? {left: (width - panelW) / 2, top: height * 0.68}
+    ? {left: (width - panelW) / 2, top: height * 0.58}
     : square
       ? {left: width - panelW - 30 * u, top: 30 * u}
-      : {left: width * 0.71, top: height * 0.36};
+      : {left: width * 0.7, top: height * 0.36};
+  // the time chip: under the caption on vertical/square (inside the 9:16 safe band), under the panel on 16:9
+  const chipBox = portrait
+    ? {left: 0, width, top: height * 0.255}
+    : square
+      ? {left: 0, width, top: height * 0.17}
+      : {left: panelPos.left, width: panelW, top: panelPos.top + panelW * 0.5 + 34 * u};
 
   const before = frame < TRIGGER + 4;
   const chip = spring({frame: frame - (LAND + 18), fps, config: {damping: 12, stiffness: 200}});
@@ -108,7 +115,7 @@ export const Flip: React.FC<{captions?: boolean; sfx?: boolean}> = ({captions = 
   const visuals = (
     <>
       <Background intensity={1 + hit * 0.6} />
-      <SceneIn punch={hit * 0.03} enter={captions}>
+      <SceneIn punch={hit * 0.03} enter={false}>
         <Camera zoom={zoom} focus={edge} centre={0.6} width={width} height={height}>
         <Desk
           {...desk}
@@ -173,9 +180,7 @@ export const Flip: React.FC<{captions?: boolean; sfx?: boolean}> = ({captions = 
           <div
             style={{
               position: 'absolute',
-              left: portrait ? 0 : panelPos.left,
-              width: portrait ? width : panelW,
-              top: portrait ? height * 0.85 : panelPos.top + panelW * (300 / 520) + 34 * u,
+              ...chipBox,
               display: 'flex',
               justifyContent: 'center',
               opacity: chip,
@@ -189,8 +194,8 @@ export const Flip: React.FC<{captions?: boolean; sfx?: boolean}> = ({captions = 
                 gap: 18 * u,
                 padding: `${14 * u}px ${28 * u}px`,
                 borderRadius: 999,
-                background: 'rgba(22,18,52,0.85)',
-                border: '2px solid rgba(255,255,255,0.18)',
+                background: colors.surface,
+                border: `2px solid ${colors.hairline}`,
                 fontFamily: fonts.mono,
                 fontWeight: 700,
                 fontSize: 50 * u,
@@ -198,7 +203,7 @@ export const Flip: React.FC<{captions?: boolean; sfx?: boolean}> = ({captions = 
               }}
             >
               <span style={{color: colors.red, textDecoration: 'line-through', textDecorationThickness: 5 * u}}>0:47</span>
-              <span style={{color: colors.dim}}>→</span>
+              <ArrowRightIcon size={44 * u} color={colors.dim} />
               <span style={{color: colors.mint}}>0.4s</span>
             </div>
           </div>

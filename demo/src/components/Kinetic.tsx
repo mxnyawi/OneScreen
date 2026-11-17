@@ -2,7 +2,7 @@ import React from 'react';
 import {Easing, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {colors, fonts} from '../theme';
 
-export type Word = {t: string; hl?: 'yellow' | 'pink' | 'cyan' | 'mint' | 'red' | 'grad'; br?: boolean};
+export type Word = {t: string; hl?: 'yellow' | 'pink' | 'cyan' | 'mint' | 'red' | 'grad' | 'ink'; br?: boolean};
 
 const HL: Record<NonNullable<Word['hl']>, {bg: string; fg: string}> = {
   yellow: {bg: colors.yellow, fg: '#0D0A26'},
@@ -10,7 +10,8 @@ const HL: Record<NonNullable<Word['hl']>, {bg: string; fg: string}> = {
   cyan: {bg: colors.cyan, fg: '#0D0A26'},
   mint: {bg: colors.mint, fg: '#0D0A26'},
   red: {bg: colors.red, fg: '#fff'},
-  grad: {bg: 'linear-gradient(95deg, #FF3D8B 0%, #FF8A3D 45%, #FFE14D 100%)', fg: '#0D0A26'},
+  grad: {bg: colors.orange, fg: '#0D0A26'}, // solid: no gradient fills on type
+  ink: {bg: colors.bg, fg: '#fff'},
 };
 
 /** Parse "Your *monitor* is [right there]" style markup is overkill; use explicit Word[]. */
@@ -98,28 +99,31 @@ export const Kinetic: React.FC<{
 };
 
 /** Small pill label, e.g. "BEFORE" / "AFTER". */
-export const Pill: React.FC<{text: string; bg: string; fg?: string; size: number; pop?: number}> = ({
+export const Pill: React.FC<{text: string; bg: string; fg?: string; size: number; pop?: number; icon?: React.ReactNode}> = ({
   text,
   bg,
   fg = '#0D0A26',
   size,
   pop = 1,
+  icon,
 }) => (
   <div
     style={{
-      display: 'inline-block',
-      padding: `${size * 0.35}px ${size * 0.9}px`,
-      borderRadius: 999,
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: size * 0.4,
+      padding: `${size * 0.35}px ${size * 0.8}px`,
+      borderRadius: size * 1.2,
       background: bg,
       color: fg,
       fontFamily: fonts.sans,
-      fontWeight: 800,
+      fontWeight: 700,
       fontSize: size,
-      letterSpacing: size * 0.08,
       scale: `${pop}`,
-      boxShadow: '0 10px 30px rgba(0,0,0,0.35)',
+      boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
     }}
   >
+    {icon}
     {text}
   </div>
 );

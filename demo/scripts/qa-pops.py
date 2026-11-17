@@ -1,5 +1,5 @@
-"""Flag single-frame pops: frames whose change from the previous frame is
->3x the median change of their neighbours (+-3 frames) and clearly visible.
+"""Final-file QA: single-frame pops (change >3x the neighbour median), black
+frames (blackdetect) and integrated loudness (ebur128, target -14 LUFS).
 
 usage: python3 scripts/qa-pops.py out/onescreen-launch-16x9.mp4
 """
@@ -33,3 +33,18 @@ for i, s in enumerate(scores):
 print(f"{len(scores)} frames analysed, {len(pops)} spikes")
 for f, s, m in pops:
     print(f"  frame {f:4d} ({f / fps:5.2f}s)  change={s:.3f}  neighbours~{m:.3f}")
+
+# black frames
+bd = subprocess.run(["ffmpeg", "-v", "info", "-i", video, "-vf", "blackdetect=d=0.05:pix_th=0.06", "-an", "-f", "null", "-"],
+                    capture_output=True, text=True)
+blacks = re.findall(r"black_start:([0-9.]+) black_end:([0-9.]+)", bd.stderr)
+print(f"black segments: {blacks or 'none'}")
+# loudness
+lo = subprocess.run(["ffmpeg", "-v", "info", "-i", video, "-vn", "-af", "ebur128=peak=true", "-f", "null", "-"],
+                    capture_output=True, text=True)
+m = re.search(r"Integrated loudness:\s+I:\s+(-?[0-9.]+) LUFS", lo.stderr)
+pk = re.search(r"True peak:\s+Peak:\s+(-?[0-9.]+) dBFS", lo.stderr)
+if m:
+    print(f"loudness: {m.group(1)} LUFS (target -14), true peak {pk.group(1) if pk else '?'} dBFS")
+else:
+    print("loudness: no audio stream")

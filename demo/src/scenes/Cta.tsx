@@ -1,8 +1,8 @@
 import React from 'react';
 import {AbsoluteFill, Easing, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
-import {Background} from '../components/Background';
 import {Cursor} from '../components/Cursor';
 import {Pill} from '../components/Kinetic';
+import {StarIcon} from '../components/Icons';
 import {LogoMark, Wordmark} from '../components/Logo';
 import {SceneIn} from '../components/Scene';
 import {Sfx} from '../components/Sfx';
@@ -17,7 +17,7 @@ export const Cta: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const {portrait, width, height, u} = useLayout();
-  const s = spring({frame, fps, config: {damping: 18, stiffness: 190}});
+  const s = spring({frame: frame + 4, fps, config: {damping: 18, stiffness: 190}});
   const btn = spring({frame: frame - 15, fps, config: {damping: 16, stiffness: 220}});
   const press = interpolate(frame, [CLICK - 2, CLICK, CLICK + 6], [1, 0.9, 1], {
     extrapolateLeft: 'clamp',
@@ -41,7 +41,7 @@ export const Cta: React.FC = () => {
   const curDY = interpolate(cp, [0, 1], [height * 0.35, 0]);
   return (
     <AbsoluteFill>
-      <Background intensity={1.2} />
+      <AbsoluteFill style={{backgroundColor: colors.violet}} />
       <SceneIn push={0.02}>
         <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center', gap: 40 * u}}>
           <div
@@ -54,11 +54,11 @@ export const Cta: React.FC = () => {
               opacity: s,
             }}
           >
-            <LogoMark size={size} />
+            <LogoMark size={size} color={colors.yellow} />
             <Wordmark size={size} />
           </div>
           <div style={{opacity: s}}>
-            <Pill text="FREE & OPEN SOURCE · macOS + WINDOWS" bg={colors.mint} size={(portrait ? 30 : 30) * u} />
+            <Pill text="Free and open source · macOS and Windows" bg={colors.bg} fg="#fff" size={32 * u} />
           </div>
           <div style={{position: 'relative', marginTop: 30 * u}}>
           <div style={{position: 'relative', scale: `${(0.5 + 0.5 * btn) * press}`, opacity: btn}}>
@@ -82,15 +82,17 @@ export const Cta: React.FC = () => {
                 gap: 22 * u,
                 padding: `${24 * u}px ${44 * u}px`,
                 borderRadius: 999,
-                background: starred ? colors.yellow : '#fff',
+                background: '#fff',
                 color: '#0D0A26',
                 fontFamily: fonts.sans,
                 fontWeight: 800,
                 fontSize: 46 * u,
-                boxShadow: starred ? `0 0 ${60 * u}px rgba(255,225,77,0.7)` : '0 20px 50px rgba(0,0,0,0.4)',
+                boxShadow: '0 20px 50px rgba(0,0,0,0.4)',
               }}
             >
-              <span style={{fontSize: 52 * u, scale: starred ? `${1 + (1 - burst) * 0.6}` : '1'}}>{starred ? '★' : '☆'}</span>
+              <div style={{scale: starred ? `${1 + (1 - burst) * 0.5}` : '1'}}>
+                <StarIcon size={50 * u} color={starred ? '#E0A800' : '#0D0A26'} fill={starred ? colors.yellow : 'none'} />
+              </div>
               Star on GitHub
             </div>
           </div>
@@ -106,7 +108,7 @@ export const Cta: React.FC = () => {
               fontFamily: fonts.mono,
               fontWeight: 700,
               fontSize: (portrait ? 38 : 36) * u,
-              color: colors.dim,
+              color: 'rgba(255,255,255,0.85)',
               opacity: btn,
             }}
           >

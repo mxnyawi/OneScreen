@@ -48,8 +48,26 @@ editing:
 - **Restraint.** Springs barely overshoot, rotation is a couple of degrees, there's no confetti, and
   motion blur is used only where something moves fast.
 - **Frame 0 must already sell it.** No fade-in on the first shot.
+- **Colour lives in the product and the brand moments, not the chrome.** The stage is one quiet
+  tinted neutral. Colour goes on the screens, the caption highlights, the solid pink/violet fields
+  for the logo and CTA, and the one glow that is the feature itself. No blurred blobs, background
+  grids, gradient text, glow halos, glass panels or rainbow charts (from
+  [unslop](https://github.com/heydamir/unslop) by @heydamir, CC BY 4.0, and
+  [Impeccable](https://github.com/pbakaus/impeccable)'s craft floor).
+- **Real icons, sentence case.** Icons are SVG from `components/Icons.tsx`, never emoji or unicode
+  glyphs. Badges are sentence case without wide tracking. No 01/02/03 numbering and no identical
+  cards side by side.
+- **Vertical safe zone (9:16).** Keep text between 168 px and 1330 px from the top, and nothing under
+  the right-hand action rail.
+- **Readable at phone size.** No text under about 2.6% of the frame's short side (28 px at 1080p)
+  once scaled.
 - **Check before you ship.** Render one frame per beat
   (`node scripts/preview-frames.mjs Launch-16x9 out/qa $(seq 0 15 749)`) and look at every one.
+  Then run `python3 scripts/qa-pops.py <video>`, which flags single-frame pops, black frames and
+  loudness.
+
+The project also vendors the `unslop` skill in `../.claude/skills/unslop` (instructions only). Run
+`/unslop` on a scene to audit it for AI-looking tells.
 
 ## Quick start
 

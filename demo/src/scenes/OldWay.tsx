@@ -7,6 +7,7 @@ import {punchAt, SceneIn} from '../components/Scene';
 import {Sfx} from '../components/Sfx';
 import {colors, fonts} from '../theme';
 import {useLayout} from '../layout';
+import {FastForwardIcon, StopwatchIcon} from '../components/Icons';
 import {keys} from '../components/Camera';
 import {whyPanel} from './Why';
 
@@ -164,11 +165,11 @@ export const OldWay: React.FC = () => {
               gap: 14 * u,
             }}
           >
-            <span style={{fontSize: 40 * u}}>⏱</span>
+            <StopwatchIcon size={46 * u} color="#fff" />
             0:{String(seconds).padStart(2, '0')}
           </div>
           <div style={{position: 'absolute', left: -20 * u, top: -36 * u, rotate: '-5deg', scale: `${badges}`}}>
-            <Pill text="▶▶ 16× SPEED" bg={colors.yellow} size={26 * u} />
+            <Pill text="16× speed" bg={colors.yellow} size={28 * u} icon={<FastForwardIcon size={26 * u} color="#0D0A26" />} />
           </div>
         </div>
       </SceneIn>

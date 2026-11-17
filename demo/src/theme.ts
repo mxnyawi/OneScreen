@@ -20,6 +20,9 @@ export const colors = {
   cyan: '#2EE6FF',
   mint: '#3DFFA2',
   red: '#FF4D5E',
+  // quiet chrome: one raised surface + hairline
+  surface: '#1A1544',
+  hairline: 'rgba(255,255,255,0.09)',
   // device chrome
   bezel: '#0B0B12',
   aluminium: '#C9CCD6',

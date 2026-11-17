@@ -1,73 +1,57 @@
 import React from 'react';
-import {colors, fonts, gradients} from '../theme';
+import {colors, fonts} from '../theme';
 
-/** OneScreen mark: two screens snapping into one, with a glowing seam. */
-export const LogoMark: React.FC<{size: number; merge?: number}> = ({size, merge = 1}) => {
-  const gap = (1 - merge) * size * 0.35;
+/**
+ * OneScreen mark: two flat screens that close the gap and become one.
+ * merge: 0 = apart, 1 = joined. One solid colour, no gradients or glow.
+ */
+export const LogoMark: React.FC<{size: number; merge?: number; color?: string}> = ({
+  size,
+  merge = 1,
+  color = colors.cyan,
+}) => {
+  const gap = size * 0.08 + (1 - merge) * size * 0.3;
+  const r = size * 0.16;
   return (
-    <div style={{position: 'relative', width: size * 1.25 + gap, height: size}}>
+    <div style={{position: 'relative', width: size * 1.3 + gap - size * 0.08, height: size, flexShrink: 0}}>
       <div
         style={{
           position: 'absolute',
           left: 0,
-          top: size * 0.14,
-          width: size * 0.62,
-          height: size * 0.72,
-          borderRadius: size * 0.14,
-          background: gradients.laptopWall,
-          boxShadow: '0 8px 24px rgba(0,0,0,0.35)',
+          top: size * 0.16,
+          width: size * 0.58,
+          height: size * 0.68,
+          borderRadius: r,
+          background: color,
         }}
       />
       <div
         style={{
           position: 'absolute',
-          left: size * 0.6 + gap,
+          left: size * 0.58 + gap,
           top: 0,
-          width: size * 0.65,
+          width: size * 0.64,
           height: size,
-          borderRadius: size * 0.14,
-          background: gradients.monitorWall,
-          boxShadow: '0 8px 24px rgba(0,0,0,0.35)',
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          left: size * 0.585 + gap / 2,
-          top: size * 0.1,
-          width: size * 0.06,
-          height: size * 0.8,
-          borderRadius: size,
-          background: gradients.glow,
-          boxShadow: `0 0 ${size * 0.25}px ${colors.cyan}`,
-          opacity: merge,
+          borderRadius: r,
+          background: color,
         }}
       />
     </div>
   );
 };
 
-export const Wordmark: React.FC<{size: number}> = ({size}) => (
+/** Solid wordmark. Colour comes from the mark beside it, not gradient text. */
+export const Wordmark: React.FC<{size: number; color?: string}> = ({size, color = colors.ink}) => (
   <div
     style={{
       fontFamily: fonts.display,
       fontWeight: 800,
       fontSize: size,
-      letterSpacing: -size * 0.04,
+      letterSpacing: -size * 0.035,
       lineHeight: 1,
-      color: colors.ink,
+      color,
     }}
   >
-    One
-    <span
-      style={{
-        background: gradients.brand,
-        WebkitBackgroundClip: 'text',
-        backgroundClip: 'text',
-        color: 'transparent',
-      }}
-    >
-      Screen
-    </span>
+    OneScreen
   </div>
 );

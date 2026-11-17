@@ -45,6 +45,7 @@ const FloodStopwatch: React.FC = () => {
       to={{x: width / 2, y: height / 2}}
       color={colors.pink}
       cutAt={9}
+      shrink={1}
     />
   );
 };

@@ -101,7 +101,7 @@ const LaptopScreen: React.FC<{wallHit: number}> = ({wallHit}) => (
     </WindowCard>
     <WindowCard x={300} y={150} w={170} h={120}>
       <div style={{display: 'flex', gap: 8, padding: '6px 14px'}}>
-        <div style={{width: 60, height: 60, borderRadius: 12, background: gradients.brand}} />
+        <div style={{width: 60, height: 60, borderRadius: 12, background: colors.orange}} />
         <div style={{flex: 1}}>
           <div style={{height: 7, borderRadius: 4, background: '#1A1240', marginBottom: 7}} />
           <div style={{height: 7, width: '70%', borderRadius: 4, background: '#D6D3E8'}} />
@@ -155,8 +155,8 @@ const MonitorScreen: React.FC<{glow: number; glowY: number; dim: number}> = ({gl
               style={{
                 flex: 1,
                 height: `${h * 100}%`,
-                borderRadius: 5,
-                background: [colors.pink, colors.orange, colors.yellow, colors.mint, colors.cyan][i],
+                borderRadius: 4,
+                background: i === 3 ? colors.violet : '#D9D6EA',
               }}
             />
           ))}
@@ -175,8 +175,8 @@ const MonitorScreen: React.FC<{glow: number; glowY: number; dim: number}> = ({gl
           background: 'rgba(255,255,255,0.28)',
         }}
       >
-        {[colors.pink, colors.orange, colors.yellow, colors.mint, colors.cyan, colors.violet].map((c) => (
-          <div key={c} style={{width: 24, height: 24, borderRadius: 7, background: c}} />
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <div key={i} style={{width: 24, height: 24, borderRadius: 7, background: i === 0 ? '#FFFFFF' : 'rgba(255,255,255,0.7)'}} />
         ))}
       </div>
       {/* darkening when the monitor is "unreachable" */}
@@ -235,7 +235,6 @@ const Arrow: React.FC<{progress: number; state: 'blocked' | 'ok'; y: number}> = 
         strokeDasharray={state === 'blocked' ? '4 18' : `${len} ${len}`}
         strokeDashoffset={state === 'blocked' ? 0 : len * (1 - progress)}
         opacity={state === 'blocked' ? Math.min(1, progress * 2) : 1}
-        style={{filter: `drop-shadow(0 0 10px ${col})`}}
       />
       {state === 'ok' && progress > 0.95 ? (
         <path
@@ -250,7 +249,6 @@ const Arrow: React.FC<{progress: number; state: 'blocked' | 'ok'; y: number}> = 
       {state === 'blocked' ? (
         <g
           transform={`translate(${midX} ${(y + y1) / 2 - 36}) scale(${xVis})`}
-          style={{filter: `drop-shadow(0 0 12px ${colors.red})`}}
         >
           <circle r={30} fill={colors.red} />
           <path d="M -11 -11 L 11 11 M 11 -11 L -11 11" stroke="#fff" strokeWidth={7} strokeLinecap="round" />
@@ -362,7 +360,7 @@ export const Desk: React.FC<DeskProps> = ({
             height: LAPTOP.h + 24,
             borderRadius: '18px 18px 6px 6px',
             background: colors.bezel,
-            boxShadow: `0 20px 50px rgba(0,0,0,0.5), 0 0 ${60 * wallHit}px ${10 * wallHit}px rgba(255,77,94,${0.6 * wallHit})`,
+            boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
           }}
         >
           <div
@@ -420,7 +418,6 @@ export const Desk: React.FC<DeskProps> = ({
             stroke="url(#trail)"
             strokeWidth={22}
             strokeLinecap="round"
-            style={{filter: `drop-shadow(0 0 14px ${colors.cyan})`}}
           />
         </svg>
       ) : null}
@@ -450,7 +447,6 @@ export const Desk: React.FC<DeskProps> = ({
                 strokeDasharray={`${2 * Math.PI * 46}`}
                 strokeDashoffset={2 * Math.PI * 46 * (1 - Math.min(1, cursor.ring))}
                 transform="rotate(-90 60 60)"
-                style={{filter: `drop-shadow(0 0 8px ${cursor.ring >= 1 ? colors.mint : colors.yellow})`}}
               />
             </svg>
           ) : null}

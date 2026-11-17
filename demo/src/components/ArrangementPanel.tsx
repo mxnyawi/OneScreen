@@ -26,9 +26,9 @@ export const ArrangementPanel: React.FC<{
   const monY = cy - mon.h / 2 + (offset?.y ?? 0) - Math.sin(Math.min(1, Math.max(0, side)) * Math.PI) * 70;
   const badge =
     status === 'wrong'
-      ? {bg: colors.red, text: 'WRONG SIDE'}
+      ? {bg: colors.red, text: 'Wrong side'}
       : status === 'right'
-        ? {bg: colors.mint, text: 'MATCHES YOUR DESK'}
+        ? {bg: colors.mint, text: 'Matches your desk'}
         : null;
   return (
     <div
@@ -38,10 +38,9 @@ export const ArrangementPanel: React.FC<{
         scale: `${k}`,
         transformOrigin: '0 0',
         borderRadius: 26,
-        background: 'rgba(22,18,52,0.82)',
-        border: '2px solid rgba(255,255,255,0.14)',
-        boxShadow: '0 30px 80px rgba(0,0,0,0.45)',
-        backdropFilter: 'blur(12px)',
+        background: colors.surface,
+        border: `2px solid ${colors.hairline}`,
+        boxShadow: '0 24px 60px rgba(0,0,0,0.4)',
         position: 'relative',
         overflow: 'hidden',
         fontFamily: fonts.sans,
@@ -52,10 +51,9 @@ export const ArrangementPanel: React.FC<{
           position: 'absolute',
           left: 24,
           top: 18,
-          fontSize: 22,
-          fontWeight: 700,
+          fontSize: 28,
+          fontWeight: 600,
           color: colors.dim,
-          letterSpacing: 0.2,
         }}
       >
         {label}
@@ -68,9 +66,8 @@ export const ArrangementPanel: React.FC<{
             top: 14,
             padding: '6px 12px',
             borderRadius: 999,
-            fontSize: 17,
-            fontWeight: 800,
-            letterSpacing: 1,
+            fontSize: 24,
+            fontWeight: 700,
             background: badge.bg,
             color: '#0D0A26',
           }}
@@ -96,7 +93,7 @@ export const ArrangementPanel: React.FC<{
             justifyContent: 'center',
             color: '#fff',
             fontWeight: 800,
-            fontSize: 22,
+            fontSize: 28,
           }}
         >
           Monitor
@@ -116,7 +113,7 @@ export const ArrangementPanel: React.FC<{
             overflow: 'hidden',
             color: '#fff',
             fontWeight: 800,
-            fontSize: 20,
+            fontSize: 26,
           }}
         >
           <div style={{height: 9, background: 'rgba(255,255,255,0.95)'}} />
