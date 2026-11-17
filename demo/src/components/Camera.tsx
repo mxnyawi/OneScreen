@@ -43,3 +43,11 @@ export const keys = (frame: number, input: number[], output: number[]) =>
 
 /** Frames per beat at 120 BPM / 30 fps. */
 export const BEAT = 15;
+
+/** Ease-in-out for continuity hand-offs: starts from rest so the cut frame doesn't jump. */
+export const glide = (frame: number, input: number[], output: number[]) =>
+  interpolate(frame, input, output, {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: Easing.inOut(Easing.cubic),
+  });

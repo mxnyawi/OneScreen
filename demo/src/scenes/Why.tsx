@@ -5,7 +5,7 @@ import {Background} from '../components/Background';
 import {CURSOR_W, Desk, LAPTOP} from '../components/Desk';
 import {Kinetic, words} from '../components/Kinetic';
 import {SceneIn} from '../components/Scene';
-import {keys} from '../components/Camera';
+import {glide, keys} from '../components/Camera';
 import {hookDesk} from './Hook';
 import {Sfx} from '../components/Sfx';
 import {fonts} from '../theme';
@@ -30,7 +30,7 @@ export const Why: React.FC = () => {
   // continuity: the desk starts exactly where the hook left it and glides aside
   const from = hookDesk(width, height, portrait);
   const to = whyDesk(width, height, portrait);
-  const m = keys(frame, [0, 16], [0, 1]);
+  const m = glide(frame, [0, 18], [0, 1]);
   const desk = {
     scale: interpolate(m, [0, 1], [from.scale, to.scale]),
     left: interpolate(m, [0, 1], [from.left, to.left]),
@@ -95,7 +95,7 @@ export const Why: React.FC = () => {
               fontWeight: 600,
               fontSize: (portrait ? 48 : 44) * u,
               color: 'rgba(255,255,255,0.85)',
-              opacity: subIn,
+              opacity: subIn * (1 - keys(frame, [82, 88], [0, 1])),
               translate: `0 ${(1 - subIn) * 20}px`,
               textAlign: 'center',
             }}

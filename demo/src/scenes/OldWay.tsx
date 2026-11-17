@@ -8,7 +8,7 @@ import {Sfx} from '../components/Sfx';
 import {colors, fonts} from '../theme';
 import {useLayout} from '../layout';
 import {FastForwardIcon, StopwatchIcon} from '../components/Icons';
-import {keys} from '../components/Camera';
+import {glide} from '../components/Camera';
 import {whyPanel} from './Why';
 
 export const OLD_LEN = 120;
@@ -88,7 +88,7 @@ export const OldWay: React.FC = () => {
   const winW = winWidthFor(width, portrait, square);
   // the Settings window grows out of the arrangement panel from the previous scene
   const fromRect = whyPanel(width, height, portrait);
-  const g = keys(frame, [0, 14], [0, 1]);
+  const g = glide(frame, [0, 16], [0, 1]);
   const finalLeft = (width - winW) / 2;
   const finalTop = portrait ? height * 0.4 : height * 0.3;
   const winLeft = interpolate(g, [0, 1], [fromRect.x, finalLeft]);
