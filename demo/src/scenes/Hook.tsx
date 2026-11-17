@@ -92,6 +92,7 @@ export const Hook: React.FC = () => {
                 size={textSize}
                 start={60}
                 stagger={4}
+                exitAt={83}
               />
             </div>
           </div>

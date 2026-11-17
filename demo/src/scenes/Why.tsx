@@ -42,12 +42,22 @@ export const Why: React.FC = () => {
     <AbsoluteFill>
       <Background />
       <SceneIn enter={false} push={0}>
+        {/* hand-off to the Settings window: the desk slides out before the cut */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            opacity: keys(frame, [WHY_LEN - 10, WHY_LEN - 2], [1, 0]),
+            translate: `${keys(frame, [WHY_LEN - 12, WHY_LEN], [0, -0.12]) * width}px 0`,
+          }}
+        >
         <Desk
           {...desk}
           cursor={{x: LAPTOP.x + LAPTOP.w - CURSOR_W - 2, y: 470}}
           wallHit={0.35}
           dimMonitor={0.3}
         />
+        </div>
         <div
           style={{
             position: 'absolute',

@@ -14,7 +14,7 @@ const only = process.argv.slice(2);
 
 const VIDEOS = ['Launch-16x9', 'Launch-9x16', 'Launch-1x1', 'Gesture-Loop', 'Gesture-Loop-Wide'];
 const STILLS = ['Thumbnail-16x9', 'Thumbnail-9x16'];
-const GIFS = {'Gesture-Loop': 720, 'Gesture-Loop-Wide': 960}; // width in px
+const GIFS = {'Gesture-Loop': 560, 'Gesture-Loop-Wide': 800}; // width in px (keep each GIF under ~8 MB for GitHub)
 
 fs.mkdirSync(OUT, {recursive: true});
 const serveUrl = await bundle({entryPoint: path.resolve('src/index.ts')});
@@ -58,7 +58,7 @@ for (const id of VIDEOS.filter(want)) {
     execFileSync('ffmpeg', [
       '-v', 'error', '-y', '-i', outputLocation,
       '-filter_complex',
-      `fps=20,scale=${w}:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=192:stats_mode=diff[p];[b][p]paletteuse=dither=sierra2_4a`,
+      `fps=15,scale=${w}:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=128:stats_mode=diff[p];[b][p]paletteuse=dither=sierra2_4a`,
       gif,
     ]);
     console.log('✔', gif);
