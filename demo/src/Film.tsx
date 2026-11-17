@@ -324,8 +324,8 @@ export const Film: React.FC<{audio?: boolean}> = ({audio = true}) => {
         <AbsoluteFill style={{background: '#000', opacity: 0.6 * seg(beat, CUE.insert, CUE.insert + 0.3, snap) * (1 - seg(beat, CUE.insertOut, CUE.insertOut + 0.25, snap))}} />
       ) : null}
       <SettingsInsert beat={beat} inAt={CUE.insert} outAt={CUE.insertOut} from={ghostScreen} W={W} H={H} u={u} />
-      <FlashCard beat={beat} at={CUE.flash[0]} len={1} text="Every desk." size={(portrait ? 150 : 190) * u} />
-      <FlashCard beat={beat} at={CUE.flash[1]} len={1} text="Every day." size={(portrait ? 150 : 190) * u} />
+      <FlashCard beat={beat} at={CUE.flash[0]} len={1} text={portrait ? "Every\ndesk." : "Every desk."} size={(portrait ? 300 : square ? 165 : 210) * u} />
+      <FlashCard beat={beat} at={CUE.flash[1]} len={1} text={portrait ? "Every\nday." : "Every day."} size={(portrait ? 300 : square ? 165 : 210) * u} />
       <BigNumber beat={beat} inAt={CUE.number} lockAt={CUE.numberLock} outAt={23.75} W={W} H={H} u={u} portrait={portrait} />
 
       <div style={{position: 'absolute', left: 0, right: 0, top: headTop, display: 'flex', justifyContent: 'center', padding: `0 ${60 * u}px`}}>

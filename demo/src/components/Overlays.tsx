@@ -121,7 +121,9 @@ export const FlashCard: React.FC<{beat: number; at: number; len: number; text: s
           color: c.text,
           scale: `${s}`,
           translate: `${jx}px 0`,
-          whiteSpace: 'nowrap',
+          whiteSpace: 'pre-line',
+          textAlign: 'center',
+          lineHeight: 0.98,
         }}
       >
         {text}
