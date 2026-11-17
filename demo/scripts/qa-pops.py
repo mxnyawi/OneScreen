@@ -23,7 +23,7 @@ if not raw:
     )
     raw = re.findall(r"lavfi.scene_score=([0-9.]+)", out.stdout + out.stderr)
 scores = [float(x) for x in raw]
-fps = 30
+fps = float(subprocess.run(['ffprobe','-v','error','-select_streams','v:0','-show_entries','stream=r_frame_rate','-of','csv=p=0',video],capture_output=True,text=True).stdout.strip().split('/')[0]) or 30
 pops = []
 for i, s in enumerate(scores):
     nb = scores[max(0, i - 3):i] + scores[i + 1:i + 4]

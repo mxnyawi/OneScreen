@@ -87,6 +87,9 @@ export const cameraBlur = (beat: number, W: number, H: number) => {
   const zb = Math.abs(Math.log(c1.z / c0.z)) * W * 0.25;
   const dx = Math.abs(c1.x - c0.x) * c1.z;
   const dy = Math.abs(c1.y - c0.y) * c1.z;
+  // a hard cut is not motion: never smear the first frame of a new shot
+  const cutJustHappened = keysFor(W, H).some((k) => k.ease === 'cut' && k.at > beat - 1 / FPB && k.at <= beat + 1e-6);
+  if (cutJustHappened) return {bx: 0, by: 0};
   const k = 0.45;
   const bx = Math.min(30, Math.max(0, dx * k + zb * k - 1.5));
   const by = Math.min(30, Math.max(0, dy * k + zb * k - 1.5));
