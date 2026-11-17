@@ -7,10 +7,22 @@ import {punchAt, SceneIn} from '../components/Scene';
 import {Sfx} from '../components/Sfx';
 import {colors, fonts} from '../theme';
 import {useLayout} from '../layout';
+import {keys} from '../components/Camera';
+import {whyPanel} from './Why';
 
 export const OLD_LEN = 120;
-const DROP = 82;
-const STAMPS = [88, 96, 104];
+// on the beat grid: drop on beat 5, 'Every. Single. Desk.' on beat 6 and its eighths
+const DROP = 75;
+const STAMPS = [90, 98, 105];
+
+const winWidthFor = (width: number, portrait: boolean, square: boolean) =>
+  portrait ? width * 0.9 : square ? width * 0.78 : width * 0.56;
+
+/** Centre of the red stopwatch: the flood into the reveal starts here. */
+export const oldWayStopwatch = (width: number, height: number, portrait: boolean, square: boolean, u: number) => {
+  const w = winWidthFor(width, portrait, square);
+  return {x: (width - w) / 2 + w - 100 * u, y: (portrait ? height * 0.4 : height * 0.3)};
+};
 
 const SettingsWindow: React.FC<{w: number; children: React.ReactNode}> = ({w, children}) => {
   const k = w / 1000;
@@ -72,13 +84,21 @@ export const OldWay: React.FC = () => {
   const dx = dropped ? 0 : dragP * 336 + wobble;
   const dy = dropped ? 0 : Math.sin(frame * 0.45) * 22 * Math.sin(dragP * Math.PI) - Math.sin(dragP * Math.PI) * 90;
   const seconds = Math.min(47, Math.floor(interpolate(frame, [6, DROP], [0, 47], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})));
-  const winW = portrait ? width * 0.9 : square ? width * 0.78 : width * 0.56;
-  const winIn = spring({frame, fps, config: {damping: 14, stiffness: 160}});
+  const winW = winWidthFor(width, portrait, square);
+  // the Settings window grows out of the arrangement panel from the previous scene
+  const fromRect = whyPanel(width, height, portrait);
+  const g = keys(frame, [0, 14], [0, 1]);
+  const finalLeft = (width - winW) / 2;
+  const finalTop = portrait ? height * 0.4 : height * 0.3;
+  const winLeft = interpolate(g, [0, 1], [fromRect.x, finalLeft]);
+  const winTop = interpolate(g, [0, 1], [fromRect.y, finalTop]);
+  const winWidth = interpolate(g, [0, 1], [fromRect.w, winW]);
+  const badges = spring({frame: frame - 10, fps, config: {damping: 18, stiffness: 220}});
   const p = punchAt(frame, STAMPS, 8);
   return (
     <AbsoluteFill>
-      <Background intensity={0.8} />
-      <SceneIn punch={p * 0.015}>
+      <Background />
+      <SceneIn punch={p * 0.015} enter={false}>
         <AbsoluteFill
           style={{
             alignItems: 'center',
@@ -107,16 +127,13 @@ export const OldWay: React.FC = () => {
         <div
           style={{
             position: 'absolute',
-            left: (width - winW) / 2,
-            top: portrait ? height * 0.4 : height * 0.3,
-            width: winW,
-            height: winW * 0.6,
-            scale: `${0.85 + 0.15 * winIn}`,
-            opacity: winIn,
-            rotate: `${(1 - winIn) * -4}deg`,
+            left: winLeft,
+            top: winTop,
+            width: winWidth,
+            height: winWidth * 0.6,
           }}
         >
-          <SettingsWindow w={winW}>
+          <SettingsWindow w={winWidth}>
             <ArrangementPanel
               side={dropped ? 1 : 0}
               status={dropped ? 'neutral' : 'wrong'}
@@ -141,6 +158,7 @@ export const OldWay: React.FC = () => {
               fontSize: 64 * u,
               boxShadow: '0 20px 50px rgba(255,77,94,0.45)',
               rotate: '4deg',
+              scale: `${badges}`,
               display: 'flex',
               alignItems: 'center',
               gap: 14 * u,
@@ -149,7 +167,7 @@ export const OldWay: React.FC = () => {
             <span style={{fontSize: 40 * u}}>⏱</span>
             0:{String(seconds).padStart(2, '0')}
           </div>
-          <div style={{position: 'absolute', left: -20 * u, top: -36 * u, rotate: '-5deg'}}>
+          <div style={{position: 'absolute', left: -20 * u, top: -36 * u, rotate: '-5deg', scale: `${badges}`}}>
             <Pill text="▶▶ 16× SPEED" bg={colors.yellow} size={26 * u} />
           </div>
         </div>

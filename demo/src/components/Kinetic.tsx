@@ -65,7 +65,7 @@ export const Kinetic: React.FC<{
         const s = spring({
           frame: frame - start - idx * stagger,
           fps,
-          config: {damping: 11, stiffness: 220, mass: 0.6},
+          config: {damping: 15, stiffness: 260, mass: 0.6},
         });
         idx++;
         const hl = w.hl ? HL[w.hl] : null;
@@ -76,8 +76,8 @@ export const Kinetic: React.FC<{
               display: 'inline-block',
               opacity: interpolate(s, [0, 0.3], [0, 1], {extrapolateRight: 'clamp'}),
               translate: `0 ${(1 - s) * size * 0.5}px`,
-              scale: `${0.6 + 0.4 * s}`,
-              rotate: `${(1 - s) * (i % 2 ? 6 : -6)}deg`,
+              scale: `${0.8 + 0.2 * s}`,
+              rotate: `${(1 - s) * (i % 2 ? 2 : -2)}deg`,
               ...(hl
                 ? {
                     background: hl.bg,

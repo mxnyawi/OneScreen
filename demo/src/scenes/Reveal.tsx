@@ -3,7 +3,6 @@ import {AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig} from
 import {Background} from '../components/Background';
 import {Kinetic, words} from '../components/Kinetic';
 import {LogoMark, Wordmark} from '../components/Logo';
-import {Flash} from '../components/Scene';
 import {Sfx} from '../components/Sfx';
 import {colors} from '../theme';
 import {useLayout} from '../layout';
@@ -46,12 +45,11 @@ export const Reveal: React.FC = () => {
           <Wordmark size={size * (portrait ? 0.95 : 1)} />
         </div>
         <div style={{marginTop: 50 * u}}>
-          <Kinetic words={words('Just push.', {push: 'grad'})} size={(portrait ? 110 : 96) * u} start={22} stagger={5} />
+          <Kinetic words={words('Just push.', {push: 'grad'})} size={(portrait ? 110 : 96) * u} start={15} stagger={5} />
         </div>
       </AbsoluteFill>
-      <Flash />
       <Sfx at={0} name="impact" volume={1} />
-      <Sfx at={22} name="pop" volume={0.6} />
+      <Sfx at={15} name="pop" volume={0.6} />
     </AbsoluteFill>
   );
 };

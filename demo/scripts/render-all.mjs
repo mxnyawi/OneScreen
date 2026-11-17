@@ -41,6 +41,16 @@ for (const id of VIDEOS.filter(want)) {
       }
     },
   });
+  if (id.startsWith('Launch')) {
+    // normalise loudness for social platforms (-14 LUFS, -1.5 dBTP), video stream copied untouched
+    const tmp = outputLocation.replace(/\.mp4$/, '.tmp.mp4');
+    execFileSync('ffmpeg', [
+      '-v', 'error', '-y', '-i', outputLocation,
+      '-c:v', 'copy', '-af', 'loudnorm=I=-14:TP=-1.5:LRA=11', '-ar', '48000', '-c:a', 'aac', '-b:a', '192k',
+      '-movflags', '+faststart', tmp,
+    ]);
+    fs.renameSync(tmp, outputLocation);
+  }
   console.log('✔', outputLocation);
   if (GIFS[id]) {
     const gif = outputLocation.replace(/\.mp4$/, '.gif');

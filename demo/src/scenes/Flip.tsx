@@ -1,6 +1,8 @@
 import React from 'react';
 import {AbsoluteFill, Easing, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
+import {CameraMotionBlur} from '@remotion/motion-blur';
 import {ArrangementPanel} from '../components/ArrangementPanel';
+import {Camera, keys} from '../components/Camera';
 import {Background} from '../components/Background';
 import {CURSOR_W, Desk, LAPTOP, MONITOR, laptopToMonitorY} from '../components/Desk';
 import {Kinetic, words} from '../components/Kinetic';
@@ -11,16 +13,30 @@ import {placeDesk, useLayout} from '../layout';
 
 export const FLIP_LEN = 180;
 // key frames (local)
-const ARRIVE = 16; // cursor reaches the edge
-const TRIGGER = 46; // push threshold reached
-const LAND = 52; // cursor lands on the monitor
-const CLICK = 104;
+// all on the 120 BPM grid (15 frames per beat)
+const ARRIVE = 15; // beat 1: cursor reaches the edge
+const TRIGGER = 45; // beat 3: push threshold reached -> flip
+const LAND = 51; // cursor lands on the monitor
+const CLICK = 105; // beat 7
 
 const WALL_X = LAPTOP.x + LAPTOP.w - CURSOR_W - 2;
 const CY = 470;
 const ENTRY_X = MONITOR.x + 4;
 const ENTRY_Y = laptopToMonitorY(CY);
 const TARGET = {x: MONITOR.x + 520, y: MONITOR.y + 210};
+
+const flipDesk = (width: number, height: number, portrait: boolean, square: boolean) =>
+  portrait
+    ? placeDesk(width * 1.08, width / 2, height * 0.47)
+    : square
+      ? placeDesk(width * 1.04, width / 2, height * 0.6)
+      : placeDesk(width * 0.68, width * 0.4, height * 0.58);
+
+/** Screen position of the final click (the flood into Features starts there). */
+export const flipClick = (width: number, height: number, portrait: boolean, square: boolean) => {
+  const d = flipDesk(width, height, portrait, square);
+  return {x: d.left + TARGET.x * d.scale, y: d.top + TARGET.y * d.scale};
+};
 
 /** The money shot: push -> flip -> glide -> glow. `captions` off for the loop/GIF. */
 export const Flip: React.FC<{captions?: boolean; sfx?: boolean}> = ({captions = true, sfx = true}) => {
@@ -71,11 +87,7 @@ export const Flip: React.FC<{captions?: boolean; sfx?: boolean}> = ({captions = 
   const click = interpolate(frame, [CLICK, CLICK + 12], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
 
   // ---- layout
-  const desk = portrait
-    ? placeDesk(width * 1.08, width / 2, height * 0.47)
-    : square
-      ? placeDesk(width * 1.04, width / 2, height * 0.6)
-      : placeDesk(width * 0.68, width * 0.4, height * 0.58);
+  const desk = flipDesk(width, height, portrait, square);
   const panelW = portrait ? width * 0.62 : square ? width * 0.34 : width * 0.26;
   const panelPos = portrait
     ? {left: (width - panelW) / 2, top: height * 0.68}
@@ -88,10 +100,16 @@ export const Flip: React.FC<{captions?: boolean; sfx?: boolean}> = ({captions = 
   const textSize = (portrait ? 108 : 92) * u;
   const clickPos = {x: desk.left + (TARGET.x + 4) * desk.scale, y: desk.top + (TARGET.y + 4) * desk.scale};
 
-  return (
-    <AbsoluteFill>
+  // camera: creep in on the edge while pushing, snap back out on the flip
+  const edge = {x: desk.left + (LAPTOP.x + LAPTOP.w + 60) * desk.scale, y: desk.top + CY * desk.scale};
+  const zoom = keys(frame, [ARRIVE, TRIGGER - 1, TRIGGER + 12], [1, portrait ? 1.3 : 1.45, 1]);
+  const blurOn = frame >= TRIGGER - 2 && frame <= LAND + 12;
+
+  const visuals = (
+    <>
       <Background intensity={1 + hit * 0.6} />
-      <SceneIn punch={hit * 0.03}>
+      <SceneIn punch={hit * 0.03} enter={captions}>
+        <Camera zoom={zoom} focus={edge} centre={0.6} width={width} height={height}>
         <Desk
           {...desk}
           cursor={{x, y, squash, ring, trailFrom}}
@@ -114,6 +132,7 @@ export const Flip: React.FC<{captions?: boolean; sfx?: boolean}> = ({captions = 
             }}
           />
         ) : null}
+        </Camera>
         {square && captions ? null : (
           <div style={{position: 'absolute', ...panelPos}}>
             <ArrangementPanel side={side} status={side > 0.5 ? 'right' : 'wrong'} width={panelW} />
@@ -185,6 +204,18 @@ export const Flip: React.FC<{captions?: boolean; sfx?: boolean}> = ({captions = 
           </div>
         ) : null}
       </SceneIn>
+    </>
+  );
+
+  return (
+    <AbsoluteFill>
+      {blurOn ? (
+        <CameraMotionBlur samples={6} shutterAngle={200}>
+          {visuals}
+        </CameraMotionBlur>
+      ) : (
+        visuals
+      )}
       {sfx ? (
         <>
           <Sfx at={ARRIVE} name="bonk" volume={0.6} />

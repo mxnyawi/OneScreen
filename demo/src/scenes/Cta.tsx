@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, Easing, interpolate, random, spring, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Easing, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {Background} from '../components/Background';
 import {Cursor} from '../components/Cursor';
 import {Pill} from '../components/Kinetic';
@@ -10,15 +10,15 @@ import {colors, fonts} from '../theme';
 import {useLayout} from '../layout';
 
 export const CTA_LEN = 90;
-const CLICK = 46;
+const CLICK = 45; // beat 3
 export const REPO = 'github.com/mxnyawi/OneScreen';
 
 export const Cta: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const {portrait, width, height, u} = useLayout();
-  const s = spring({frame, fps, config: {damping: 12, stiffness: 170}});
-  const btn = spring({frame: frame - 14, fps, config: {damping: 11, stiffness: 200}});
+  const s = spring({frame, fps, config: {damping: 18, stiffness: 190}});
+  const btn = spring({frame: frame - 15, fps, config: {damping: 16, stiffness: 220}});
   const press = interpolate(frame, [CLICK - 2, CLICK, CLICK + 6], [1, 0.9, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
@@ -62,30 +62,19 @@ export const Cta: React.FC = () => {
           </div>
           <div style={{position: 'relative', marginTop: 30 * u}}>
           <div style={{position: 'relative', scale: `${(0.5 + 0.5 * btn) * press}`, opacity: btn}}>
-            {/* star burst */}
-            {starred
-              ? Array.from({length: 14}).map((_, i) => {
-                  const a = (i / 14) * Math.PI * 2 + random(`a${i}`) * 0.3;
-                  const r = (140 + random(`r${i}`) * 160) * u * burst;
-                  return (
-                    <div
-                      key={i}
-                      style={{
-                        position: 'absolute',
-                        left: '50%',
-                        top: '50%',
-                        width: 18 * u,
-                        height: 18 * u,
-                        borderRadius: 5 * u,
-                        background: [colors.yellow, colors.pink, colors.cyan, colors.mint, colors.orange][i % 5],
-                        translate: `${Math.cos(a) * r - 9 * u}px ${Math.sin(a) * r - 9 * u}px`,
-                        rotate: `${burst * 360 * (i % 2 ? 1 : -1)}deg`,
-                        opacity: 1 - burst,
-                      }}
-                    />
-                  );
-                })
-              : null}
+            {/* single ring pulse on click (no confetti) */}
+            {starred ? (
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  borderRadius: 999,
+                  border: `${4 * u}px solid ${colors.yellow}`,
+                  scale: `${1 + burst * 0.35} ${1 + burst * 0.9}`,
+                  opacity: 1 - burst,
+                }}
+              />
+            ) : null}
             <div
               style={{
                 display: 'flex',

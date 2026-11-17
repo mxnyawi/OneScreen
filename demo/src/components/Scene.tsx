@@ -2,13 +2,14 @@ import React from 'react';
 import {AbsoluteFill, Easing, interpolate, useCurrentFrame} from 'remotion';
 
 /** Snappy scene entrance: quick zoom-settle + blur clear. Optional slow camera push. */
-export const SceneIn: React.FC<{children: React.ReactNode; push?: number; punch?: number}> = ({
+export const SceneIn: React.FC<{children: React.ReactNode; push?: number; punch?: number; enter?: boolean}> = ({
   children,
   push = 0.04,
   punch = 0,
+  enter: animateIn = true,
 }) => {
   const frame = useCurrentFrame();
-  const enter = interpolate(frame, [0, 7], [0, 1], {
+  const enter = !animateIn ? 1 : interpolate(frame, [0, 7], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
     easing: Easing.bezier(0.16, 1, 0.3, 1),
@@ -18,7 +19,7 @@ export const SceneIn: React.FC<{children: React.ReactNode; push?: number; punch?
       style={{
         scale: `${1.08 - 0.08 * enter + push * Math.min(1, frame / 150) + punch}`,
         filter: `blur(${(1 - enter) * 10}px)`,
-        opacity: interpolate(frame, [0, 3], [0, 1], {extrapolateRight: 'clamp'}),
+        opacity: animateIn ? interpolate(frame, [0, 3], [0, 1], {extrapolateRight: 'clamp'}) : 1,
       }}
     >
       {children}

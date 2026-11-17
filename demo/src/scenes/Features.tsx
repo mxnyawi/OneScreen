@@ -14,8 +14,9 @@ const FEATURES = [
   {n: '02', title: 'macOS + Windows', body: 'Same push, same result, on both.', c: colors.cyan},
   {n: '03', title: 'Zero setup', body: 'No sensors. No camera. No clicks.', c: colors.yellow},
 ];
-const START = 14;
-const STAGGER = 12;
+// one card per beat
+const START = 15;
+const STAGGER = 15;
 
 export const Features: React.FC = () => {
   const frame = useCurrentFrame();
@@ -27,7 +28,7 @@ export const Features: React.FC = () => {
   return (
     <AbsoluteFill>
       <Background />
-      <SceneIn>
+      <SceneIn enter={false}>
         <AbsoluteFill
           style={{
             alignItems: 'center',
@@ -45,7 +46,7 @@ export const Features: React.FC = () => {
             }}
           >
             {FEATURES.map((f, i) => {
-              const s = spring({frame: frame - START - i * STAGGER, fps, config: {damping: 12, stiffness: 190, mass: 0.7}});
+              const s = spring({frame: frame - START - i * STAGGER, fps, config: {damping: 18, stiffness: 220, mass: 0.7}});
               return (
                 <div
                   key={f.n}
@@ -58,7 +59,7 @@ export const Features: React.FC = () => {
                     boxShadow: `0 30px 70px rgba(0,0,0,0.4), inset 0 ${6 * u}px 0 ${f.c}`,
                     opacity: Math.min(1, s * 2),
                     translate: `0 ${(1 - s) * 140 * u}px`,
-                    rotate: `${(1 - s) * (i - 1) * 8}deg`,
+                    rotate: `${(1 - s) * (i - 1) * 3}deg`,
                     scale: `${0.7 + 0.3 * s}`,
                     boxSizing: 'border-box',
                     fontFamily: fonts.sans,
