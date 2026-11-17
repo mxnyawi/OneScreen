@@ -1,0 +1,25 @@
+{
+  "name": "onescreen-demo-videos",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Launch/demo videos for OneScreen, built with Remotion",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "node scripts/render-all.mjs",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.544",
+    "@remotion/google-fonts": "4.0.544",
+    "@remotion/media": "4.0.544",
+    "@remotion/shapes": "4.0.544",
+    "@remotion/transitions": "4.0.544",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "remotion": "4.0.544"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "typescript": "5.9"
+  }
+}
