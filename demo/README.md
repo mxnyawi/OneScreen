@@ -1,121 +1,101 @@
-# OneScreen demo videos
+# OneScreen demo film
 
-The launch and demo videos for OneScreen, written as code with [Remotion](https://www.remotion.dev)
-(React → MP4). Every frame, animation, caption and sound cue is in `src/`, so you can change a word
-and re-render. You don't need to edit anything in a timeline.
+The launch film for OneScreen, written as code with [Remotion](https://www.remotion.dev)
+(React → MP4) at 60 fps. Picture and sound share one beat grid. Every move, line and sound is in
+`src/`, so you change it by editing code and re-rendering, not in a video editor.
 
 ## What gets rendered
 
 | File (in `out/`) | Size | Length | Use it for |
 | --- | --- | --- | --- |
-| `onescreen-launch-16x9.mp4` | 1920×1080 | 25 s | YouTube, X/Twitter, Product Hunt, landing page |
-| `onescreen-launch-9x16.mp4` | 1080×1920 | 25 s | TikTok, Reels, YouTube Shorts |
-| `onescreen-launch-1x1.mp4` | 1080×1080 | 25 s | LinkedIn, X, Reddit feed |
-| `onescreen-gesture-loop.mp4` / `.gif` | 1080×1080 | 4.7 s | README hero GIF, autoplay embeds |
-| `onescreen-gesture-loop-wide.mp4` / `.gif` | 1600×900 | 4.7 s | Hacker News / blog header |
-| `onescreen-thumbnail-16x9.png` | 1920×1080 | – | YouTube thumbnail, OG/social card |
-| `onescreen-thumbnail-9x16.png` | 1080×1920 | – | Shorts / Reels cover |
+| `onescreen-launch-16x9.mp4` | 1920×1080 | 21 s | YouTube, X, Product Hunt, landing page |
+| `onescreen-launch-9x16.mp4` | 1080×1920 | 21 s | TikTok, Reels, Shorts |
+| `onescreen-launch-1x1.mp4` | 1080×1080 | 21 s | LinkedIn, X, Reddit |
+| `onescreen-gesture-loop.mp4` / `.gif` | 1080×1080 | 3 s | README hero, autoplay embeds |
+| `onescreen-gesture-loop-wide.mp4` / `.gif` | 1600×900 | 3 s | Hacker News / blog header |
+| `onescreen-thumbnail-16x9.png`, `-9x16.png` | – | – | Thumbnails, social cards |
 
-The launch video has seven scenes. Each one is a file in `src/scenes/`:
+## The film
 
-1. **Hook** (0–3 s): opens tight on the cursor slamming the screen edge. On the first kick the camera
-   pulls back to show the monitor. "Monitor is right there. Mouse says nope."
-2. **Why** (3–6 s): the same desk slides aside and the display arrangement shows the monitor on the
-   wrong side.
-3. **Old way** (6–10 s): the arrangement panel grows into a Settings window. Rectangles get dragged at
-   16× speed while a stopwatch climbs to 0:47. "Every. Single. Desk."
-4. **Reveal** (10–12 s): the stopwatch floods the frame pink and contracts into the OneScreen logo.
-   "Just push."
-5. **Flip** (12–18 s): the main demo. The camera creeps in while the push ring fills, then the layout
-   flips and the camera snaps out. The cursor glides across with motion blur, the edge glows, and a
-   "0:47 → 0.4s" chip appears.
-6. **Features** (18–22 s): the final click floods into three cards, one per beat.
-7. **CTA** (22–25 s): a "Star on GitHub" button gets clicked. Shows the repo URL.
+It's one continuous world under one camera (`src/Film.tsx`), at 120 BPM. One beat is 0.5 s, or 30 frames.
 
-## Design rules
+| Beats | Shot | Line |
+| --- | --- | --- |
+| 0–4 | Extreme close-up: the cursor slams a dead screen edge on every beat, and the edge goes red | Your mouse hits a wall. |
+| 4–8 | Whip pull-out: both displays, plus a dashed ghost on the left where macOS thinks the monitor is | Wrong side. |
+| 8–12 | The ghost expands into the Settings arrangement: a jittery drag and a 0:47 timer | – |
+| 12–14 | Text-flash cuts on the beat | Every desk. / Every day. |
+| 14–18 | Freeze in digital silence, back on the cursor. It winds up and pushes as the edge fills with the accent | Just push. |
+| 18–20 | The press: the ghost flies over and snaps onto the real monitor, light sweeps it, and the cursor glides through | Layout fixed. |
+| 20–24 | One number, scrambling out of glyph noise | 0 clicks |
+| 24–32 | Desk layouts snap in on the beat (home, office, hot desk) and the cursor crosses each shared edge | Remembers every desk. |
+| 32–42 | The displays put themselves away, the wordmark is revealed by light, then the repo | Free and open source. macOS and Windows. |
 
-These were distilled from the most-shared launch-film prompts in
-[awesome-opus5-5-videos](https://github.com/yihui-dev/awesome-opus5-5-videos). Keep to them when
-editing:
+## Style rules
 
-- **Something happens on every beat.** The music is 120 BPM, so a beat is 15 frames. Key hits (bonks,
-  the flip, card pops, clicks) sit on multiples of 15. `BEAT` is in `components/Camera.tsx`.
-- **No flashes or crossfades between scenes.** Each scene comes out of the one before: shared
-  objects (the desk, the panel → window) or a shape flood (`components/Flood.tsx`). Hard cuts only
-  on a downbeat.
-- **The camera frames the action.** It zooms in on the important moment and pulls back on the beat
-  (`components/Camera.tsx`). Captions sit outside the camera.
-- **Restraint.** Springs barely overshoot, rotation is a couple of degrees, there's no confetti, and
-  motion blur is used only where something moves fast.
-- **Frame 0 must already sell it.** No fade-in on the first shot.
-- **Colour lives in the product and the brand moments, not the chrome.** The stage is one quiet
-  tinted neutral. Colour goes on the screens, the caption highlights, the solid pink/violet fields
-  for the logo and CTA, and the one glow that is the feature itself. No blurred blobs, background
-  grids, gradient text, glow halos, glass panels or rainbow charts (from
-  [unslop](https://github.com/heydamir/unslop) by @heydamir, CC BY 4.0, and
-  [Impeccable](https://github.com/pbakaus/impeccable)'s craft floor).
-- **Real icons, sentence case.** Icons are SVG from `components/Icons.tsx`, never emoji or unicode
-  glyphs. Badges are sentence case without wide tracking. No 01/02/03 numbering and no identical
-  cards side by side.
-- **Vertical safe zone (9:16).** Keep text between 168 px and 1330 px from the top, and nothing under
-  the right-hand action rail.
-- **Readable at phone size.** No text under about 2.6% of the frame's short side (28 px at 1080p)
-  once scaled.
-- **Check before you ship.** Render one frame per beat
-  (`node scripts/preview-frames.mjs Launch-16x9 out/qa $(seq 0 15 749)`) and look at every one.
-  Then run `python3 scripts/qa-pops.py <video>`, which flags single-frame pops, black frames and
-  loudness.
+The visual grammar follows the *dark-keynote* and *swiss-motion* recipes from
+[lemo-opuscar](https://github.com/lemomo-ai/lemo-opuscar), adapted rather than copied. Keep to it
+when editing:
 
-The project also vendors the `unslop` skill in `../.claude/skills/unslop` (instructions only). Run
-`/unslop` on a scene to audit it for AI-looking tells.
+- **The interface is the hero.** Displays are dark, real-proportioned surfaces with hairline UI. No
+  illustrated devices, no stands or bezels, no cards, badges or icons.
+- **One accent** (lime, `c.accent`) means "OneScreen did this": the filling edge, the snap, the glow,
+  the number and the link. **Red** exists only while the problem does and never comes back after the
+  press. Everything else is a cool neutral ladder.
+- **One line per shot.** Words rise out of a clip and leave upward. Nothing fades or bounces.
+  Captions never cover the thing they talk about (the camera's `clearCaption`).
+- **Everything lands on the beat.** Moves use one snap ease, `cubic-bezier(.7,0,.2,1)`, start a
+  little early and land on the beat. The cue table lives in `src/film/timeline.ts`, and
+  `scripts/make-audio.py` uses the same beats.
+- **Shots change by UI**: whips, the ghost expanding into the insert, collapses, and hard cuts on
+  downbeats. No crossfades.
+- **Motion blur comes from camera speed** (`cameraBlur`): whips smear, slow pushes stay sharp.
+- **Sound is part of the story.** The mess phases out of time, the freeze is digital silence, the
+  press lands as one chord, and the ending subtracts notes down to one.
 
 ## Quick start
 
 ```bash
 cd demo
 npm install
-npm run studio          # live preview + scrubbing in the browser (Remotion Studio)
-npm run render          # render everything into out/
-npm run render -- Launch-9x16   # or just one composition
+python3 scripts/make-audio.py   # (re)build the score and foley in public/audio
+npm run studio                  # preview and scrub in Remotion Studio
+npm run render                  # render everything into out/
+npm run render -- Launch-9x16   # or one composition
 ```
 
-Rendering needs Chrome. Remotion downloads one automatically. To use a Chrome you already have,
-set `REMOTION_CHROME=/path/to/chrome`.
+Rendering needs Chrome. Remotion downloads one, or set `REMOTION_CHROME=/path/to/chrome`.
+
+### Checks before posting
+
+```bash
+node scripts/preview-frames.mjs Launch-16x9 out/qa $(seq 0 30 1259)   # one frame per beat
+python3 scripts/qa-pops.py out/onescreen-launch-16x9.mp4              # pops, black frames, loudness
+```
 
 ## Changing things
 
 | Want to change… | Edit |
 | --- | --- |
-| Caption text | the `words('…', {word: 'yellow'})` calls in each scene. Highlight colours: `yellow`, `pink`, `cyan`, `mint`, `red`, `grad` |
+| Lines | the `<Headline text=…>` elements in `src/Film.tsx` |
+| Timing | `CUE` in `src/film/timeline.ts` (and the matching beats in `scripts/make-audio.py`) |
+| Camera | `keysFor` in `src/film/camera.ts` |
+| Display positions, desk layouts | `src/film/world.ts` |
 | Colours, fonts | `src/theme.ts` |
-| Scene order, lengths | `SCENES` in `src/Launch.tsx` (lengths are the `*_LEN` exports) |
-| Gesture timing | the `ARRIVE` / `TRIGGER` / `LAND` constants in `src/scenes/Flip.tsx` (keep them on the beat grid) |
-| Repo URL in the CTA | `REPO` in `src/scenes/Cta.tsx` |
-| Music / SFX | `public/sfx/`. Turn the music off with the `music: false` prop |
-
-The name lives in `components/Logo.tsx` (`Wordmark`). If the final name changes, that file and the
-caption strings are the only places to update.
+| Repo URL | the end card in `src/Film.tsx` |
 
 ## Audio
 
-- `beat.wav`, `bonk.wav`, `pop.wav`, `riser.wav`, `impact.wav` are **original sounds made by
-  `scripts/make-audio.py`** (numpy only). They're royalty-free and safe to post anywhere. The beat is
-  120 BPM, so scene cuts land on the beat.
-- `whoosh`, `whip`, `switch`, `mouse-click`, `ding`, `shutter-modern` are from the Remotion SFX
-  library (`remotion.media`).
-- The render script normalises the launch videos to -14 LUFS, the loudness most platforms target.
-- **Tip for TikTok/Reels:** render with `music: false` and add a trending sound inside the app. Native
-  trending audio usually gets more reach than a baked-in track.
+All audio is original and generated by `scripts/make-audio.py` (numpy only): a mallet score at 120 BPM
+plus dry foley (tick, thud, whip, glass, snap, digit, shimmer, crt). It's royalty-free. The render
+script normalises the launch videos to -14 LUFS. For TikTok/Reels, consider rendering with
+`audio: false` and adding a trending sound in the app.
 
-## Claude Code skills
+## Licences
 
-The official [Remotion Agent Skills](https://github.com/remotion-dev/skills) are installed in
-`../.claude/skills/` (`remotion-best-practices`, `remotion-markup`, `remotion-render`, …).
-Any Claude Code session in this repo can use them. Example: "/remotion-markup add a scene showing
-the per-desk memory".
-
-## Licence note
-
-Remotion is free for individuals and companies with up to 3 employees. Larger companies need a
-[company licence](https://www.remotion.dev/license). OneScreen's own code stays MIT. This `demo/`
-folder only uses Remotion as a build tool for the videos.
+- Remotion is free for individuals and companies of up to 3 people. Larger companies need a
+  [company licence](https://www.remotion.dev/license). OneScreen itself stays MIT.
+- Style grammar: lemo-opuscar `STYLE.md` recipes (CC BY-NC 4.0, with a grant to follow and adapt
+  them for your own films). No text or code from them is included here.
+- `../.claude/skills/` contains the Remotion agent skills and the `unslop` skill (CC BY 4.0, by
+  @heydamir).
