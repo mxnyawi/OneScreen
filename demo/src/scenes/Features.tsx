@@ -20,8 +20,10 @@ const STAGGER = 12;
 export const Features: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
-  const {portrait, width, height, u} = useLayout();
-  const cardW = portrait ? width * 0.84 : width * 0.27;
+  const {portrait: tall, square, width, height, u} = useLayout();
+  const portrait = tall || square;
+  const k = square ? 0.72 : 1; // squeeze the column to fit 1:1
+  const cardW = tall ? width * 0.84 : square ? width * 0.78 : width * 0.27;
   return (
     <AbsoluteFill>
       <Background />
@@ -30,16 +32,16 @@ export const Features: React.FC = () => {
           style={{
             alignItems: 'center',
             justifyContent: 'center',
-            gap: (portrait ? 70 : 70) * u,
+            gap: 70 * u * k,
             paddingTop: portrait ? 0 : height * 0.02,
           }}
         >
-          <Kinetic words={words('Set it. Forget it.', {Forget: 'grad'})} size={(portrait ? 110 : 92) * u} start={1} />
+          <Kinetic words={words('Set it. Forget it.', {Forget: 'grad'})} size={(portrait ? 110 : 92) * u * k} start={1} />
           <div
             style={{
               display: 'flex',
               flexDirection: portrait ? 'column' : 'row',
-              gap: (portrait ? 36 : 40) * u,
+              gap: (portrait ? 36 : 40) * u * k,
             }}
           >
             {FEATURES.map((f, i) => {
@@ -49,7 +51,7 @@ export const Features: React.FC = () => {
                   key={f.n}
                   style={{
                     width: cardW,
-                    padding: `${38 * u}px ${40 * u}px`,
+                    padding: `${38 * u * k}px ${40 * u}px`,
                     borderRadius: 36 * u,
                     background: 'rgba(22,18,52,0.78)',
                     border: '2px solid rgba(255,255,255,0.14)',
@@ -67,7 +69,7 @@ export const Features: React.FC = () => {
                     style={{
                       fontFamily: fonts.display,
                       fontWeight: 800,
-                      fontSize: (portrait ? 64 : 52) * u,
+                      fontSize: (portrait ? 64 : 52) * u * k,
                       letterSpacing: -1.5 * u,
                       color: '#fff',
                       marginTop: 10 * u,
@@ -76,7 +78,7 @@ export const Features: React.FC = () => {
                   >
                     {f.title}
                   </div>
-                  <div style={{fontSize: (portrait ? 36 : 30) * u, fontWeight: 600, color: colors.dim, marginTop: 16 * u, lineHeight: 1.3}}>
+                  <div style={{fontSize: (portrait ? 36 : 30) * u * k, fontWeight: 600, color: colors.dim, marginTop: 16 * u * k, lineHeight: 1.3}}>
                     {f.body}
                   </div>
                 </div>

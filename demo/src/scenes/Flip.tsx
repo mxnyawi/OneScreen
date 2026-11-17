@@ -114,9 +114,11 @@ export const Flip: React.FC<{captions?: boolean; sfx?: boolean}> = ({captions = 
             }}
           />
         ) : null}
-        <div style={{position: 'absolute', ...panelPos}}>
-          <ArrangementPanel side={side} status={side > 0.5 ? 'right' : 'wrong'} width={panelW} />
-        </div>
+        {square && captions ? null : (
+          <div style={{position: 'absolute', ...panelPos}}>
+            <ArrangementPanel side={side} status={side > 0.5 ? 'right' : 'wrong'} width={panelW} />
+          </div>
+        )}
         {captions ? (
           <AbsoluteFill
             style={{

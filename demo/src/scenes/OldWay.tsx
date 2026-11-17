@@ -60,7 +60,7 @@ const SettingsWindow: React.FC<{w: number; children: React.ReactNode}> = ({w, ch
 export const OldWay: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
-  const {width, height, portrait, u} = useLayout();
+  const {width, height, portrait, square, u} = useLayout();
   // drag the monitor rect from the left to the right of the laptop, clumsily
   const dragP = interpolate(frame, [14, DROP], [0, 1], {
     extrapolateLeft: 'clamp',
@@ -72,7 +72,7 @@ export const OldWay: React.FC = () => {
   const dx = dropped ? 0 : dragP * 336 + wobble;
   const dy = dropped ? 0 : Math.sin(frame * 0.45) * 22 * Math.sin(dragP * Math.PI) - Math.sin(dragP * Math.PI) * 90;
   const seconds = Math.min(47, Math.floor(interpolate(frame, [6, DROP], [0, 47], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})));
-  const winW = portrait ? width * 0.9 : width * 0.56;
+  const winW = portrait ? width * 0.9 : square ? width * 0.78 : width * 0.56;
   const winIn = spring({frame, fps, config: {damping: 14, stiffness: 160}});
   const p = punchAt(frame, STAMPS, 8);
   return (
@@ -109,6 +109,8 @@ export const OldWay: React.FC = () => {
             position: 'absolute',
             left: (width - winW) / 2,
             top: portrait ? height * 0.4 : height * 0.3,
+            width: winW,
+            height: winW * 0.6,
             scale: `${0.85 + 0.15 * winIn}`,
             opacity: winIn,
             rotate: `${(1 - winIn) * -4}deg`,
