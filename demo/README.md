@@ -18,15 +18,38 @@ and re-render. You don't need to edit anything in a timeline.
 
 The launch video has seven scenes. Each one is a file in `src/scenes/`:
 
-1. **Hook** (0–3 s): the cursor slams into the screen edge. "Monitor is right there. Mouse says nope."
-2. **Why** (3–6 s): the display arrangement shows the monitor on the wrong side.
-3. **Old way** (6–10 s): dragging rectangles in Settings at 16× speed while a stopwatch climbs to 0:47.
-   "Every. Single. Desk."
-4. **Reveal** (10–12 s): the OneScreen logo snaps together. "Just push."
-5. **Flip** (12–18 s): the main demo. The cursor pushes, the push ring fills, the layout flips, the
-   cursor glides across, the edge glows, and a "0:47 → 0.4s" chip appears.
-6. **Features** (18–22 s): remembers every desk, macOS + Windows, zero setup.
-7. **CTA** (22–25 s): a "Star on GitHub" button gets clicked and the star bursts. Shows the repo URL.
+1. **Hook** (0–3 s): opens tight on the cursor slamming the screen edge. On the first kick the camera
+   pulls back to show the monitor. "Monitor is right there. Mouse says nope."
+2. **Why** (3–6 s): the same desk slides aside and the display arrangement shows the monitor on the
+   wrong side.
+3. **Old way** (6–10 s): the arrangement panel grows into a Settings window. Rectangles get dragged at
+   16× speed while a stopwatch climbs to 0:47. "Every. Single. Desk."
+4. **Reveal** (10–12 s): the stopwatch floods the frame pink and contracts into the OneScreen logo.
+   "Just push."
+5. **Flip** (12–18 s): the main demo. The camera creeps in while the push ring fills, then the layout
+   flips and the camera snaps out. The cursor glides across with motion blur, the edge glows, and a
+   "0:47 → 0.4s" chip appears.
+6. **Features** (18–22 s): the final click floods into three cards, one per beat.
+7. **CTA** (22–25 s): a "Star on GitHub" button gets clicked. Shows the repo URL.
+
+## Design rules
+
+These were distilled from the most-shared launch-film prompts in
+[awesome-opus5-5-videos](https://github.com/yihui-dev/awesome-opus5-5-videos). Keep to them when
+editing:
+
+- **Something happens on every beat.** The music is 120 BPM, so a beat is 15 frames. Key hits (bonks,
+  the flip, card pops, clicks) sit on multiples of 15. `BEAT` is in `components/Camera.tsx`.
+- **No flashes or crossfades between scenes.** Each scene comes out of the one before: shared
+  objects (the desk, the panel → window) or a shape flood (`components/Flood.tsx`). Hard cuts only
+  on a downbeat.
+- **The camera frames the action.** It zooms in on the important moment and pulls back on the beat
+  (`components/Camera.tsx`). Captions sit outside the camera.
+- **Restraint.** Springs barely overshoot, rotation is a couple of degrees, there's no confetti, and
+  motion blur is used only where something moves fast.
+- **Frame 0 must already sell it.** No fade-in on the first shot.
+- **Check before you ship.** Render one frame per beat
+  (`node scripts/preview-frames.mjs Launch-16x9 out/qa $(seq 0 15 749)`) and look at every one.
 
 ## Quick start
 
@@ -48,7 +71,7 @@ set `REMOTION_CHROME=/path/to/chrome`.
 | Caption text | the `words('…', {word: 'yellow'})` calls in each scene. Highlight colours: `yellow`, `pink`, `cyan`, `mint`, `red`, `grad` |
 | Colours, fonts | `src/theme.ts` |
 | Scene order, lengths | `SCENES` in `src/Launch.tsx` (lengths are the `*_LEN` exports) |
-| Gesture timing | the `ARRIVE` / `TRIGGER` / `LAND` constants in `src/scenes/Flip.tsx` |
+| Gesture timing | the `ARRIVE` / `TRIGGER` / `LAND` constants in `src/scenes/Flip.tsx` (keep them on the beat grid) |
 | Repo URL in the CTA | `REPO` in `src/scenes/Cta.tsx` |
 | Music / SFX | `public/sfx/`. Turn the music off with the `music: false` prop |
 
@@ -62,6 +85,7 @@ caption strings are the only places to update.
   120 BPM, so scene cuts land on the beat.
 - `whoosh`, `whip`, `switch`, `mouse-click`, `ding`, `shutter-modern` are from the Remotion SFX
   library (`remotion.media`).
+- The render script normalises the launch videos to -14 LUFS, the loudness most platforms target.
 - **Tip for TikTok/Reels:** render with `music: false` and add a trending sound inside the app. Native
   trending audio usually gets more reach than a baked-in track.
 
