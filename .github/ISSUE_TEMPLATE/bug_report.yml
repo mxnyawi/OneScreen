@@ -1,0 +1,40 @@
+name: Bug report
+description: Something didn't flip, flipped wrongly, or flipped when it shouldn't have.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS and version
+      placeholder: macOS 15.1 (Apple Silicon) / Windows 11 24H2
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: OneScreen version
+      placeholder: 0.1.0, or a commit hash if built from source
+  - type: textarea
+    id: displays
+    attributes:
+      label: Your displays
+      description: How many, their resolutions and scaling, how they're connected (dock, DisplayLink, direct). A screenshot of the display arrangement settings helps a lot.
+    validations:
+      required: true
+  - type: dropdown
+    id: sensitivity
+    attributes:
+      label: Sensitivity setting
+      options: [Medium (default), Low, High]
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Trackpad or mouse, games running, Hot Corners, other display utilities installed.

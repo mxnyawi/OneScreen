@@ -97,5 +97,5 @@ script normalises the launch videos to -14 LUFS. For TikTok/Reels, consider rend
   [company licence](https://www.remotion.dev/license). OneScreen itself stays MIT.
 - Style grammar: lemo-opuscar `STYLE.md` recipes (CC BY-NC 4.0, with a grant to follow and adapt
   them for your own films). No text or code from them is included here.
-- `../.claude/skills/` contains the Remotion agent skills and the `unslop` skill (CC BY 4.0, by
-  @heydamir).
+- To give Claude Code (or another agent) Remotion know-how while editing the film, install the
+  official agent skills with `npx remotion skills add` from this folder. They aren't vendored here.

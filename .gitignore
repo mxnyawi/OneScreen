@@ -1,0 +1,14 @@
+# Rust
+/target
+
+# demo film (see demo/README.md)
+demo/node_modules
+demo/out/*
+!demo/out/.gitkeep
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
