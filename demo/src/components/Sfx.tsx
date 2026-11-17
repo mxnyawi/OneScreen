@@ -1,22 +1,13 @@
 import React from 'react';
 import {Audio} from '@remotion/media';
 import {Sequence, staticFile} from 'remotion';
+import {b} from '../film/timeline';
 
-export type SfxName =
-  | 'bonk'
-  | 'pop'
-  | 'riser'
-  | 'impact'
-  | 'whoosh'
-  | 'whip'
-  | 'switch'
-  | 'mouse-click'
-  | 'ding'
-  | 'shutter-modern';
+export type SfxName = 'tick' | 'thud' | 'whip' | 'glass' | 'snap' | 'digit' | 'shimmer' | 'crt';
 
-/** Fire a one-shot sound effect at a (local) frame. */
-export const Sfx: React.FC<{at: number; name: SfxName; volume?: number}> = ({at, name, volume = 0.8}) => (
-  <Sequence from={Math.round(at)} durationInFrames={60} name={`sfx:${name}`} layout="none">
-    <Audio src={staticFile(`sfx/${name}.wav`)} volume={volume} />
+/** One-shot foley at a beat. */
+export const Sfx: React.FC<{beat: number; name: SfxName; volume?: number}> = ({beat, name, volume = 0.7}) => (
+  <Sequence from={b(beat)} durationInFrames={b(3.5)} name={`${name}@${beat}`} layout="none">
+    <Audio src={staticFile(`audio/${name}.wav`)} volume={volume} />
   </Sequence>
 );

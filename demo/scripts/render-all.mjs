@@ -58,7 +58,7 @@ for (const id of VIDEOS.filter(want)) {
     execFileSync('ffmpeg', [
       '-v', 'error', '-y', '-i', outputLocation,
       '-filter_complex',
-      `fps=15,scale=${w}:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=128:stats_mode=diff[p];[b][p]paletteuse=dither=sierra2_4a`,
+      `fps=20,scale=${w}:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=128:stats_mode=diff[p];[b][p]paletteuse=dither=sierra2_4a`,
       gif,
     ]);
     console.log('✔', gif);
