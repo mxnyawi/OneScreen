@@ -13,14 +13,17 @@
 
 </div>
 
-You moved your laptop to the other side of your monitor, and now the mouse hits an invisible wall
-because your computer still thinks the monitor is on the left. Normally you'd dig through display
-settings and drag rectangles around. With OneScreen you just keep pushing the mouse toward the
-monitor: the layout flips, the cursor carries on across, and the edge glows to show you where it
-came through.
+**Made for hot desks and changing setups.** If you work at a different desk most days, or split
+your week between home and the office, the monitor is rarely on the side your computer expects.
+The mouse hits an invisible wall at the edge of the screen, and the fix is a trip into display
+settings to drag rectangles around. Every desk, every day.
 
+With OneScreen you just keep pushing the mouse toward the monitor. The layout flips to match the
+desk you're at, the cursor carries on across, and the edge glows to show where it came through.
+
+- **Remembers every desk.** Plug in at home, at the office or at the same hot desk again, and that
+  desk's layout comes back on its own.
 - **No setup.** No sensors, no camera, nothing to configure. It reacts to something you already do.
-- **Remembers every desk.** Plug in at home or the office and that desk's layout comes back.
 - **Stays out of the way.** It lives in the menu bar or tray, ignores corners, drags and games,
   and never sends anything over the network.
 
