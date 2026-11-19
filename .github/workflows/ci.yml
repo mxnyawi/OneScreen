@@ -18,7 +18,7 @@ jobs:
     name: Core tests (Linux)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # rustup is preinstalled on GitHub's runners: no third-party actions needed
       - run: rustup toolchain install stable --profile minimal -c rustfmt,clippy && rustup default stable
       - run: cargo fmt --all -- --check
@@ -33,7 +33,7 @@ jobs:
         os: [macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: rustup toolchain install stable --profile minimal -c clippy && rustup default stable
       - run: cargo clippy -p onescreen -- -D warnings
       - run: cargo test --workspace
