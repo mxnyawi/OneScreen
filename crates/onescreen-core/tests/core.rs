@@ -310,6 +310,22 @@ fn flip_end_to_end_warp_and_glow_after_the_os_confirms() {
 }
 
 #[test]
+fn flip_finishes_immediately_even_if_the_os_adjusts_the_position() {
+    let mut e = Engine::new(State::default());
+    e.handle(displays_event(0.0, wrong_side()));
+    e.handle(Event::Tick { t: 1.0 });
+    for i in 0..60 {
+        e.handle(Event::Motion(motion(2.0 + i as f64 * 0.01, 1511.0, 491.0, 10.0, 0.0)));
+    }
+    // asked for y = -229, the OS snapped it to y = 0
+    let mut snapped = wrong_side();
+    snapped[1].bounds = snapped[1].bounds.with_origin(Point::new(1512.0, 0.0));
+    let after = e.handle(Event::Applied { t: 2.7, ok: true, displays: Some(snapped) });
+    // no 3 s wait; landing computed from the actual position (same relative height, 0.5 of 1440)
+    assert_eq!(after[0], Action::Warp(Point::new(1514.0, 720.0)));
+}
+
+#[test]
 fn a8_failed_apply_beeps_and_changes_nothing() {
     let mut e = Engine::new(State::default());
     e.handle(displays_event(0.0, wrong_side()));

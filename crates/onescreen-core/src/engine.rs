@@ -72,6 +72,8 @@ enum After {
 #[derive(Clone, Debug)]
 struct Pending {
     expect: Vec<(DisplayId, Point)>,
+    /// Origins of the same displays before the change.
+    before: Vec<(DisplayId, Point)>,
     deadline: f64,
     after: After,
 }
@@ -150,7 +152,7 @@ impl Engine {
         let Some(prev) = self.undo.take() else {
             return vec![];
         };
-        self.pending = Some(Pending { expect: prev.clone(), deadline: t + APPLY_TIMEOUT_SECS, after: After::Quiet });
+        self.pending = Some(self.make_pending(prev.clone(), t + APPLY_TIMEOUT_SECS, After::Quiet));
         vec![Action::Apply(prev)]
     }
 
@@ -176,11 +178,8 @@ impl Engine {
                 .filter_map(|(id, _)| self.displays.iter().find(|d| d.id == *id).map(|d| (*id, d.bounds.origin())))
                 .collect(),
         );
-        self.pending = Some(Pending {
-            expect: plan.origins.clone(),
-            deadline: m.t + APPLY_TIMEOUT_SECS,
-            after: After::Flip(plan.landing),
-        });
+        self.pending =
+            Some(self.make_pending(plan.origins.clone(), m.t + APPLY_TIMEOUT_SECS, After::Flip(plan.landing)));
         vec![Action::Apply(plan.origins)]
     }
 
@@ -191,7 +190,7 @@ impl Engine {
         let mut out = Vec::new();
 
         if let Some(p) = &self.pending {
-            if self.layout_matches(&p.expect) {
+            if self.layout_matches(&p.expect) || self.moved_since(&p.before) {
                 out.extend(self.finish_pending());
             }
         }
@@ -224,11 +223,7 @@ impl Engine {
                 let restore = self.memory.get(&desk).and_then(|l| l.restore_plan(&self.displays));
                 match restore {
                     Some(origins) => {
-                        self.pending = Some(Pending {
-                            expect: origins.clone(),
-                            deadline: t + APPLY_TIMEOUT_SECS,
-                            after: After::Restore,
-                        });
+                        self.pending = Some(self.make_pending(origins.clone(), t + APPLY_TIMEOUT_SECS, After::Restore));
                         out.push(Action::Apply(origins));
                     }
                     None => {
@@ -244,6 +239,26 @@ impl Engine {
 
     fn remembering(&self) -> bool {
         self.config.remember_desks && self.displays.len() >= 2 && !self.mirrored
+    }
+
+    fn make_pending(&self, expect: Vec<(DisplayId, Point)>, deadline: f64, after: After) -> Pending {
+        let before = expect
+            .iter()
+            .filter_map(|(id, _)| self.displays.iter().find(|d| d.id == *id).map(|d| (*id, d.bounds.origin())))
+            .collect();
+        Pending { expect, before, deadline, after }
+    }
+
+    /// The OS applied the change but may have tidied the positions (snapping, alignment):
+    /// any movement of the displays we moved counts as done. The landing point is then
+    /// computed from where they actually are.
+    fn moved_since(&self, before: &[(DisplayId, Point)]) -> bool {
+        before.iter().any(|(id, p)| {
+            self.displays
+                .iter()
+                .find(|d| d.id == *id)
+                .is_some_and(|d| (d.bounds.x - p.x).abs() > 1.0 || (d.bounds.y - p.y).abs() > 1.0)
+        })
     }
 
     fn layout_matches(&self, expect: &[(DisplayId, Point)]) -> bool {

@@ -94,13 +94,15 @@ const MOUSE_MOVED_MASK: u64 = (1 << 5) | (1 << 6) | (1 << 7) | (1 << 27);
 pub struct MacOs {
     glow: Option<Retained<AnyObject>>,
     _monitor: Option<Retained<AnyObject>>,
+    /// Kept for the app's lifetime so the handler can never be freed under AppKit.
+    _handler: RcBlock<dyn Fn(*mut AnyObject)>,
 }
 
 pub fn start(proxy: Proxy) -> (Box<dyn Platform>, Arc<Deltas>) {
     let deltas = Arc::new(Deltas::default());
 
     // G1: a global monitor keeps reporting deltaX/deltaY while the cursor is pinned at an edge.
-    let monitor = {
+    let (monitor, handler) = {
         let deltas = deltas.clone();
         let proxy = proxy.clone();
         let block = RcBlock::new(move |event: *mut AnyObject| {
@@ -115,7 +117,7 @@ pub fn start(proxy: Proxy) -> (Box<dyn Platform>, Arc<Deltas>) {
         let m: Option<Retained<AnyObject>> = unsafe {
             msg_send![class!(NSEvent), addGlobalMonitorForEventsMatchingMask: MOUSE_MOVED_MASK, handler: &*block]
         };
-        m
+        (m, block)
     };
 
     // display changes; the proxy lives for the whole process
@@ -124,7 +126,7 @@ pub fn start(proxy: Proxy) -> (Box<dyn Platform>, Arc<Deltas>) {
         CGDisplayRegisterReconfigurationCallback(on_reconfigure, user);
     }
 
-    (Box::new(MacOs { glow: None, _monitor: monitor }), deltas)
+    (Box::new(MacOs { glow: None, _monitor: monitor, _handler: handler }), deltas)
 }
 
 extern "C" fn on_reconfigure(_display: CGDirectDisplayID, flags: u32, user: *mut c_void) {
