@@ -40,7 +40,10 @@ jobs:
       - run: cargo test --workspace
       - name: Build OneScreen.app
         if: runner.os == 'macOS'
-        run: ./scripts/bundle-macos.sh
+        # zip with ditto: upload-artifact drops Unix permissions, which would break the app
+        run: |
+          ./scripts/bundle-macos.sh
+          ditto -c -k --keepParent target/release/bundle/OneScreen.app OneScreen-macOS.zip
       - name: Build onescreen.exe
         if: runner.os == 'Windows'
         run: cargo build --release -p onescreen
@@ -48,6 +51,6 @@ jobs:
         with:
           name: onescreen-${{ runner.os }}
           path: |
-            target/release/bundle/OneScreen.app
+            OneScreen-macOS.zip
             target/release/onescreen.exe
           if-no-files-found: error
