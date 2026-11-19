@@ -1,5 +1,5 @@
 import React from 'react';
-import {Composition, Folder, Freeze, Sequence, Still} from 'remotion';
+import {Composition, Folder, Sequence} from 'remotion';
 import {Film} from './Film';
 import {b, FPS, LENGTH_BEATS} from './film/timeline';
 
@@ -10,12 +10,6 @@ const Loop: React.FC = () => (
   <Sequence from={-b(14)} layout="none">
     <Film audio={false} />
   </Sequence>
-);
-
-const Poster: React.FC<{at: number}> = ({at}) => (
-  <Freeze frame={b(at)}>
-    <Film audio={false} />
-  </Freeze>
 );
 
 export const RemotionRoot: React.FC = () => (
@@ -29,9 +23,15 @@ export const RemotionRoot: React.FC = () => (
       <Composition id="Gesture-Loop" component={Loop} durationInFrames={b(6)} fps={FPS} width={1080} height={1080} />
       <Composition id="Gesture-Loop-Wide" component={Loop} durationInFrames={b(6)} fps={FPS} width={1600} height={900} />
     </Folder>
-    <Folder name="Stills">
-      <Still id="Thumbnail-16x9" component={Poster} width={1920} height={1080} defaultProps={{at: 19.6}} />
-      <Still id="Thumbnail-9x16" component={Poster} width={1080} height={1920} defaultProps={{at: 19.6}} />
+    {/*
+      Posters are single frames of silent, full-length compositions, rendered at beat 19.6
+      ("Layout fixed." on screen) by scripts/render-all.mjs. A <Still> is one frame long, so the
+      timeline would clamp any frame inside it to 0 and every poster would show the opening shot.
+    */}
+    <Folder name="Posters">
+      <Composition id="Thumbnail-16x9" component={Film} durationInFrames={LEN} fps={FPS} width={1920} height={1080} defaultProps={{audio: false}} />
+      <Composition id="Thumbnail-9x16" component={Film} durationInFrames={LEN} fps={FPS} width={1080} height={1920} defaultProps={{audio: false}} />
+      <Composition id="Social-card" component={Film} durationInFrames={LEN} fps={FPS} width={1280} height={640} defaultProps={{audio: false, card: true}} />
     </Folder>
   </>
 );

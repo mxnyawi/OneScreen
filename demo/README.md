@@ -13,7 +13,8 @@ The launch film for OneScreen, written as code with [Remotion](https://www.remot
 | `onescreen-launch-1x1.mp4` | 1080×1080 | 21 s | LinkedIn, X, Reddit |
 | `onescreen-gesture-loop.mp4` / `.gif` | 1080×1080 | 3 s | README hero, autoplay embeds |
 | `onescreen-gesture-loop-wide.mp4` / `.gif` | 1600×900 | 3 s | Hacker News / blog header |
-| `onescreen-thumbnail-16x9.png`, `-9x16.png` | – | – | Thumbnails, social cards |
+| `onescreen-thumbnail-16x9.png`, `-9x16.png` | – | – | Video thumbnails |
+| `onescreen-social-card.jpg` | 1280×640 | – | GitHub social preview (under 1 MB), link cards |
 
 ## The film
 

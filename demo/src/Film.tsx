@@ -53,7 +53,8 @@ const sharedEdge = (lap: Rect, mon: Rect) => {
   return {kind: 'v' as const, x: lap.x, y0: lap.y, y1: lap.y + lap.h};
 };
 
-export const Film: React.FC<{audio?: boolean}> = ({audio = true}) => {
+/** `card`: social-preview variant: the product name and pitch replace the caption. */
+export const Film: React.FC<{audio?: boolean; card?: boolean}> = ({audio = true, card = false}) => {
   const frame = useCurrentFrame();
   const beat = frame / FPB;
   const {width: W, height: H, portrait, square, u} = useLayout();
@@ -328,7 +329,15 @@ export const Film: React.FC<{audio?: boolean}> = ({audio = true}) => {
       <FlashCard beat={beat} at={CUE.flash[1]} len={1} text={portrait ? "Every\nday." : "Every day."} size={(portrait ? 300 : square ? 165 : 210) * u} />
       <BigNumber beat={beat} inAt={CUE.number} lockAt={CUE.numberLock} outAt={23.75} W={W} H={H} u={u} portrait={portrait} />
 
-      <div style={{position: 'absolute', left: 0, right: 0, top: headTop, display: 'flex', justifyContent: 'center', padding: `0 ${60 * u}px`}}>
+      {card ? (
+        <div style={{position: 'absolute', left: 0, right: 0, top: H * 0.74, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 * u}}>
+          <Wordmark beat={99} at={0} size={70 * u} W={W} />
+          <div style={{fontFamily: fonts.sans, fontWeight: 500, fontSize: 30 * u, color: c.text2}}>
+            Push your cursor toward a monitor. It moves there.
+          </div>
+        </div>
+      ) : null}
+      <div style={{position: 'absolute', left: 0, right: 0, top: headTop, display: card ? 'none' : 'flex', justifyContent: 'center', padding: `0 ${60 * u}px`}}>
         <Headline text="Your mouse hits a wall." beat={beat} inAt={0.1} outAt={3.4} size={headSize} />
         <Headline text="Wrong side." beat={beat} inAt={4.25} outAt={7.45} size={headSize} />
         <Headline text="Just push." beat={beat} inAt={15.1} outAt={17.7} size={headSize} accentWords={['push']} />

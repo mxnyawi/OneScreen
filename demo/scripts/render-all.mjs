@@ -13,7 +13,9 @@ const browserExecutable = process.env.REMOTION_CHROME || undefined;
 const only = process.argv.slice(2);
 
 const VIDEOS = ['Launch-16x9', 'Launch-9x16', 'Launch-1x1', 'Gesture-Loop', 'Gesture-Loop-Wide'];
-const STILLS = ['Thumbnail-16x9', 'Thumbnail-9x16'];
+const STILLS = ['Thumbnail-16x9', 'Thumbnail-9x16', 'Social-card'];
+// poster frame: beat 19.6 ("Layout fixed.") at 30 frames per beat
+const POSTER_FRAME = Math.round(19.6 * 30);
 const GIFS = {'Gesture-Loop': 560, 'Gesture-Loop-Wide': 800}; // width in px (keep each GIF under ~8 MB for GitHub)
 
 fs.mkdirSync(OUT, {recursive: true});
@@ -67,7 +69,17 @@ for (const id of VIDEOS.filter(want)) {
 
 for (const id of STILLS.filter(want)) {
   const composition = await selectComposition({serveUrl, id, browserExecutable});
-  const output = path.join(OUT, `onescreen-${id.toLowerCase()}.png`);
-  await renderStill({serveUrl, composition, output, browserExecutable});
+  // GitHub's social preview must be under 1 MB, so the social card is a JPEG
+  const jpeg = id === 'Social-card';
+  const output = path.join(OUT, `onescreen-${id.toLowerCase()}.${jpeg ? 'jpg' : 'png'}`);
+  await renderStill({
+    serveUrl,
+    composition,
+    output,
+    browserExecutable,
+    frame: POSTER_FRAME,
+    imageFormat: jpeg ? 'jpeg' : 'png',
+    ...(jpeg ? {jpegQuality: 90} : {}),
+  });
   console.log('✔', output);
 }
