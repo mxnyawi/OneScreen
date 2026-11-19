@@ -1,5 +1,9 @@
-# Push a tag like v0.1.0 to build macOS (universal) and Windows downloads and
-# attach them to a GitHub Release.
+# Push a tag like v0.1.0 (or publish a release with a new tag on GitHub) to build
+# the macOS (universal) and Windows downloads and attach them to the release.
+#
+# Security: only GitHub's own actions and the preinstalled gh CLI touch the release,
+# the token is read-only except in the final publish job, and a SHA256SUMS.txt is
+# published alongside the downloads.
 name: Release
 
 on:
@@ -7,16 +11,14 @@ on:
     tags: ["v*"]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   macos:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-apple-darwin, x86_64-apple-darwin
+      - run: rustup toolchain install stable --profile minimal -t aarch64-apple-darwin,x86_64-apple-darwin && rustup default stable
       - run: ./scripts/bundle-macos.sh --universal
       - run: cd target/release/bundle && ditto -c -k --keepParent OneScreen.app ../../../OneScreen-macOS.zip
       - uses: actions/upload-artifact@v4
@@ -28,7 +30,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - run: rustup toolchain install stable --profile minimal; rustup default stable
       - run: cargo build --release -p onescreen
       - run: Compress-Archive -Path target/release/onescreen.exe -DestinationPath OneScreen-Windows.zip
       - uses: actions/upload-artifact@v4
@@ -39,13 +41,23 @@ jobs:
   publish:
     needs: [macos, windows]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # the only job that can write
     steps:
       - uses: actions/download-artifact@v4
         with:
           merge-multiple: true
-      - uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            OneScreen-macOS.zip
-            OneScreen-Windows.zip
-          generate_release_notes: true
+      - name: Checksums
+        run: sha256sum OneScreen-macOS.zip OneScreen-Windows.zip > SHA256SUMS.txt && cat SHA256SUMS.txt
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          files="OneScreen-macOS.zip OneScreen-Windows.zip SHA256SUMS.txt"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            # a release created on github.com: just attach the files
+            gh release upload "$TAG" $files --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$TAG" $files --generate-notes --verify-tag --repo "$GITHUB_REPOSITORY"
+          fi
