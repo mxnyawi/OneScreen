@@ -150,7 +150,7 @@ the outward push. Once it passes the threshold, OneScreen:
 | --- | --- | --- |
 | Mouse movement | `NSEvent` global monitor (`deltaX`/`deltaY`) | Raw Input (`WM_INPUT`, background sink) |
 | Displays | CoreGraphics (`CGGetActiveDisplayList`, `CGConfigureDisplayOrigin`) | `QueryDisplayConfig` / `SetDisplayConfig` |
-| Display identity | vendor / model / serial | EDID manufacturer / product + connector |
+| Display identity | EDID vendor / model / serial | EDID manufacturer / product / serial (falls back to the connector if a monitor reports none) |
 | Glow | Borderless click-through `NSWindow` | Layered click-through window |
 | Launch at login | LaunchAgent in `~/Library/LaunchAgents` | `HKCU\…\CurrentVersion\Run` |
 

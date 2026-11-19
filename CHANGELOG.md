@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.1]
+
+- Windows: displays are now identified by their EDID serial number, so identical monitor models
+  at different hot desks are told apart and each desk keeps its own layout. Desks learned with
+  0.1.0 on Windows are learned again the first time you connect to them.
+- Releases include `SHA256SUMS.txt`, and the one-line installers verify downloads against it.
+- CI and release workflows run with read-only tokens and only GitHub's own actions.
+
 ## [0.1.0]
 
 First public preview.

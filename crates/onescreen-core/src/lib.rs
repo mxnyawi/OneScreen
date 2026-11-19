@@ -6,6 +6,7 @@
 pub mod arrange;
 pub mod config;
 pub mod display;
+pub mod edid;
 pub mod engine;
 pub mod geometry;
 pub mod gesture;

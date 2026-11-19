@@ -369,6 +369,35 @@ fn m5_manual_changes_are_remembered() {
     assert_eq!(e.desks_remembered(), 1);
 }
 
+/// Hot desks with the same monitor model: only the serial differs, and each desk keeps its own layout.
+#[test]
+fn identical_models_at_two_desks_keep_separate_layouts() {
+    let desk_a = vec![
+        display(1, "builtin", 0.0, 0.0, 1512.0, 982.0, true),
+        display(2, "10ac-a0c4-snCN0ABC123", 1512.0, -229.0, 2560.0, 1440.0, false), // monitor on the right
+    ];
+    let desk_b = vec![
+        display(1, "builtin", 0.0, 0.0, 1512.0, 982.0, true),
+        display(2, "10ac-a0c4-snCN0XYZ789", -2560.0, -229.0, 2560.0, 1440.0, false), // same model, on the left
+    ];
+    assert_ne!(desk_id(&desk_a), desk_id(&desk_b));
+    let mut mem = Memory::default();
+    mem.remember(&desk_a);
+    mem.remember(&desk_b);
+    let mut e = Engine::new(State { config: Config::default(), memory: mem });
+
+    // arrive at desk A; macOS/Windows bring the monitor back on the left (wrong for this desk)
+    let mut wrong_a = desk_a.clone();
+    wrong_a[1].bounds = wrong_a[1].bounds.with_origin(Point::new(-2560.0, -229.0));
+    e.handle(displays_event(0.0, wrong_a));
+    assert_eq!(e.handle(Event::Tick { t: 1.0 }), vec![Action::Apply(vec![(DisplayId(2), Point::new(1512.0, -229.0))])]);
+
+    // later, at desk B the monitor comes back on the left, which is what desk B wants: nothing to do
+    let mut e = Engine::new(e.state());
+    e.handle(displays_event(10.0, desk_b));
+    assert!(e.handle(Event::Tick { t: 11.0 }).is_empty());
+}
+
 #[test]
 fn remember_off_never_restores() {
     let right = vec![

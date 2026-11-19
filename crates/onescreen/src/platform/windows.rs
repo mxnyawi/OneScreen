@@ -193,29 +193,42 @@ fn source_mode_index(p: &DISPLAYCONFIG_PATH_INFO) -> usize {
     unsafe { p.sourceInfo.Anonymous.modeInfoIdx as usize }
 }
 
-/// M1: EDID manufacturer + product, plus the connector's UID from the device path.
+/// M1: EDID manufacturer + product + the monitor's own serial number, so identical
+/// models at different hot desks get different identities. Monitors that report no
+/// serial fall back to the connector they're plugged into.
 fn monitor_key(p: &DISPLAYCONFIG_PATH_INFO) -> String {
-    unsafe {
-        let mut name = DISPLAYCONFIG_TARGET_DEVICE_NAME::default();
-        name.header.r#type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
-        name.header.size = size_of::<DISPLAYCONFIG_TARGET_DEVICE_NAME>() as u32;
-        name.header.adapterId = p.targetInfo.adapterId;
-        name.header.id = p.targetInfo.id;
-        if DisplayConfigGetDeviceInfo(&mut name.header) != 0 {
-            return format!("target-{}", p.targetInfo.id);
-        }
-        let path_len = name.monitorDevicePath.iter().position(|&c| c == 0).unwrap_or(name.monitorDevicePath.len());
-        let path = String::from_utf16_lossy(&name.monitorDevicePath[..path_len]);
-        // \\?\DISPLAY#DEL41A3#5&1f2b3c&0&UID4352#{guid}
-        let parts: Vec<&str> = path.split('#').collect();
-        let uid = parts.get(2).and_then(|s| s.rsplit_once("UID")).map(|(_, u)| u).unwrap_or("");
-        format!(
-            "{:04x}-{:04x}-{}",
-            name.edidManufactureId,
-            name.edidProductCodeId,
-            if uid.is_empty() { &path } else { uid }
-        )
+    let mut name = DISPLAYCONFIG_TARGET_DEVICE_NAME::default();
+    name.header.r#type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
+    name.header.size = size_of::<DISPLAYCONFIG_TARGET_DEVICE_NAME>() as u32;
+    name.header.adapterId = p.targetInfo.adapterId;
+    name.header.id = p.targetInfo.id;
+    if unsafe { DisplayConfigGetDeviceInfo(&mut name.header) } != 0 {
+        return format!("target-{}", p.targetInfo.id);
     }
+    let path_len = name.monitorDevicePath.iter().position(|&c| c == 0).unwrap_or(name.monitorDevicePath.len());
+    let path = String::from_utf16_lossy(&name.monitorDevicePath[..path_len]);
+    let model = format!("{:04x}-{:04x}", name.edidManufactureId, name.edidProductCodeId);
+    if let Some(serial) = edid_for_device_path(&path).as_deref().and_then(onescreen_core::edid::serial) {
+        return format!("{model}-sn{serial}");
+    }
+    // \\?\DISPLAY#DEL41A3#5&1f2b3c&0&UID4352#{guid}
+    let uid = path.split('#').nth(2).and_then(|s| s.rsplit_once("UID")).map(|(_, u)| u.to_string());
+    format!("{model}-{}", uid.unwrap_or(path))
+}
+
+/// The raw EDID Windows stores for a monitor, found from its device path:
+/// `\\?\DISPLAY#DEL41A3#5&1f2b3c&0&UID4352#{guid}` lives at
+/// `HKLM\SYSTEM\CurrentControlSet\Enum\DISPLAY\DEL41A3\5&1f2b3c&0&UID4352\Device Parameters\EDID`.
+/// Readable without admin rights.
+fn edid_for_device_path(path: &str) -> Option<Vec<u8>> {
+    use winreg::enums::{HKEY_LOCAL_MACHINE, KEY_READ};
+    let mut parts = path.split('#');
+    let _prefix = parts.next()?; // \\?\DISPLAY
+    let (model, instance) = (parts.next()?, parts.next()?);
+    let key = format!(r"SYSTEM\CurrentControlSet\Enum\DISPLAY\{model}\{instance}\Device Parameters");
+    let params = winreg::RegKey::predef(HKEY_LOCAL_MACHINE).open_subkey_with_flags(key, KEY_READ).ok()?;
+    let value = params.get_raw_value("EDID").ok()?;
+    Some(value.bytes.into_owned())
 }
 
 fn dpi_scale(r: &Rect) -> f64 {
