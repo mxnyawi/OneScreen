@@ -32,47 +32,50 @@ came through.
 
 ## Install
 
-### Download
+Paste one line into a terminal. It downloads OneScreen, starts it, and sets it to start at
+login. Run the same line again later to update.
 
-Prebuilt downloads are on the [Releases page](https://github.com/mxnyawi/OneScreen/releases) once a
-version has been published. They aren't code-signed yet, so the first launch needs one extra click:
+**macOS** (13 or later, Apple Silicon or Intel), in Terminal:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/mxnyawi/OneScreen/main/install.sh | bash
+```
+
+**Windows** (10 or 11), in PowerShell:
+
+```powershell
+irm https://raw.githubusercontent.com/mxnyawi/OneScreen/main/install.ps1 | iex
+```
+
+That's it. Look for the two-screens icon in the menu bar (macOS) or system tray (Windows), then
+push your cursor toward your monitor.
+
+No admin rights are needed. The installers only touch the app itself, a Start menu shortcut
+(Windows), and a launch-at-login entry. Read them first if you like:
+[install.sh](install.sh), [install.ps1](install.ps1).
 
 <details>
-<summary><b>macOS</b> (13 Ventura or later, Apple Silicon or Intel)</summary>
+<summary>Uninstall</summary>
 
-1. Download `OneScreen-macOS.zip` and unzip it.
-2. Drag **OneScreen.app** into **Applications**.
-3. Right-click it, choose **Open**, then **Open** again. (macOS blocks unsigned apps on a normal
-   double-click. You only need to do this once.)
+**macOS:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/mxnyawi/OneScreen/main/install.sh | bash -s -- --uninstall
+```
 
-   If macOS says the app "is damaged", run this once in Terminal, then open it normally:
-   ```bash
-   xattr -dr com.apple.quarantine /Applications/OneScreen.app
-   ```
-4. A small two-screens icon appears in the menu bar. That's it.
+**Windows:**
+```powershell
+irm https://raw.githubusercontent.com/mxnyawi/OneScreen/main/uninstall.ps1 | iex
+```
+
+Your settings file stays behind (see [Where your settings live](#where-your-settings-live)).
+Delete it too if you want a clean slate.
 
 </details>
 
 <details>
-<summary><b>Windows</b> (10 22H2 or 11)</summary>
+<summary>Build from source instead</summary>
 
-1. Download `OneScreen-Windows.zip` and unzip it somewhere permanent, e.g. `C:\Program Files\OneScreen\`.
-2. Double-click **onescreen.exe**. If SmartScreen appears, click **More info → Run anyway**.
-3. The OneScreen icon appears in the system tray (you may need to click `^` to see it).
-
-</details>
-
-### Build from source
-
-You need [Rust](https://rustup.rs). Install it with the command on that page and accept the
-defaults. You also need the platform's build tools:
-
-| | Build tools |
-| --- | --- |
-| macOS | Xcode Command Line Tools: `xcode-select --install` |
-| Windows | [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/), with the **Desktop development with C++** workload |
-
-Then:
+Install [Rust](https://rustup.rs), then:
 
 ```bash
 git clone https://github.com/mxnyawi/OneScreen.git
@@ -80,15 +83,11 @@ cd OneScreen
 cargo run --release -p onescreen
 ```
 
-The first build takes a few minutes. After that, OneScreen runs from the terminal and shows up in the
-menu bar or tray.
+On macOS you also need the Xcode Command Line Tools (`xcode-select --install`). On Windows you need
+the [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) with
+"Desktop development with C++". More in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-To make a proper app you can keep:
-
-- **macOS:** `./scripts/bundle-macos.sh` builds `target/release/bundle/OneScreen.app`. Move it
-  to Applications.
-- **Windows:** `cargo build --release -p onescreen` builds `target\release\onescreen.exe`. Copy it
-  wherever you like.
+</details>
 
 ---
 
@@ -204,15 +203,6 @@ in Settings. OneScreen waits for the change to finish before moving the cursor.
 
 Rearrange it the way you want, in Settings or with a push. OneScreen remembers the last layout you
 used at each desk. **Forget learned desks** clears them all.
-
-</details>
-
-<details>
-<summary><b>Uninstall</b></summary>
-
-1. Turn off **Launch at login** in the menu, then **Quit OneScreen**.
-2. Delete the app (`OneScreen.app` or `onescreen.exe`).
-3. Optionally delete the settings folder listed above.
 
 </details>
 

@@ -93,8 +93,16 @@ pub fn run() {
 
 impl App {
     fn start(proxy: Proxy) -> App {
-        let state = store::load();
+        let mut state = store::load();
         let (platform, deltas) = platform::start(proxy);
+        // The one-line installers start the app with this flag so it comes back after a restart.
+        if std::env::args().any(|a| a == "--launch-at-login")
+            && !state.config.launch_at_login
+            && platform.set_launch_at_login(true).is_ok()
+        {
+            state.config.launch_at_login = true;
+            store::save(&state);
+        }
         let engine = Engine::new(state);
         let items = build_items(engine.config());
         let menu = Menu::new();
