@@ -30,6 +30,23 @@ try {
     return
 }
 
+# verify against the release's published checksums (releases before 0.1.1 have none)
+if (-not $env:ONESCREEN_ZIP) {
+    $sums = $null
+    try { $sums = (Invoke-WebRequest -Uri "https://github.com/$repo/releases/latest/download/SHA256SUMS.txt" -UseBasicParsing).Content } catch { }
+    if ($sums -is [byte[]]) { $sums = [Text.Encoding]::UTF8.GetString($sums) }
+    $line = if ($sums) { ($sums -split "`n") | Where-Object { $_ -match 'OneScreen-Windows\.zip' } | Select-Object -First 1 }
+    if ($line) {
+        $expected = ($line.Trim() -split '\s+')[0].ToLower()
+        $actual = (Get-FileHash -Algorithm SHA256 -Path $zip).Hash.ToLower()
+        if ($expected -ne $actual) {
+            Remove-Item $zip -Force
+            Write-Host "Checksum mismatch: the download doesn't match the release. Nothing was installed. Please report it at https://github.com/$repo/issues" -ForegroundColor Red
+            return
+        }
+    }
+}
+
 # stop an older copy so it can be replaced
 Get-Process -Name onescreen -ErrorAction SilentlyContinue | Stop-Process -Force
 Start-Sleep -Milliseconds 500

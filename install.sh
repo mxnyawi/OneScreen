@@ -54,6 +54,15 @@ else
   curl -fL --progress-bar "$URL" -o "$TMP/OneScreen.zip" \
     || fail "Download failed. Check your connection, or see https://github.com/$REPO/releases"
 fi
+# verify against the release's published checksums (releases before 0.1.1 have none)
+if [[ -z "${ONESCREEN_ZIP:-}" ]] \
+  && curl -fsSL "https://github.com/$REPO/releases/latest/download/SHA256SUMS.txt" -o "$TMP/SHA256SUMS.txt" 2>/dev/null; then
+  expected="$(grep ' OneScreen-macOS.zip$' "$TMP/SHA256SUMS.txt" | cut -d' ' -f1)"
+  actual="$(shasum -a 256 "$TMP/OneScreen.zip" | cut -d' ' -f1)"
+  if [[ -n "$expected" && "$expected" != "$actual" ]]; then
+    fail "Checksum mismatch: the download doesn't match the release. Nothing was installed. Please report it at https://github.com/$REPO/issues"
+  fi
+fi
 ditto -x -k "$TMP/OneScreen.zip" "$TMP"
 [[ -d "$TMP/OneScreen.app" ]] || fail "The download didn't contain OneScreen.app."
 

@@ -6,6 +6,10 @@ on:
     tags-ignore: ["v*"]
   pull_request:
 
+# Read-only token: nothing in CI can push, tag or publish.
+permissions:
+  contents: read
+
 env:
   CARGO_TERM_COLOR: always
 
@@ -15,10 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt, clippy
-      - uses: Swatinem/rust-cache@v2
+      # rustup is preinstalled on GitHub's runners: no third-party actions needed
+      - run: rustup toolchain install stable --profile minimal -c rustfmt,clippy && rustup default stable
       - run: cargo fmt --all -- --check
       - run: cargo clippy -p onescreen-core --all-targets -- -D warnings
       - run: cargo test --workspace
@@ -32,10 +34,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: clippy
-      - uses: Swatinem/rust-cache@v2
+      - run: rustup toolchain install stable --profile minimal -c clippy && rustup default stable
       - run: cargo clippy -p onescreen -- -D warnings
       - run: cargo test --workspace
       - name: Build OneScreen.app
