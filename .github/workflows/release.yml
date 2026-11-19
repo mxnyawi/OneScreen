@@ -17,7 +17,7 @@ jobs:
   macos:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: rustup toolchain install stable --profile minimal -t aarch64-apple-darwin,x86_64-apple-darwin && rustup default stable
       - run: ./scripts/bundle-macos.sh --universal
       - run: cd target/release/bundle && ditto -c -k --keepParent OneScreen.app ../../../OneScreen-macOS.zip
@@ -29,7 +29,7 @@ jobs:
   windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: rustup toolchain install stable --profile minimal; rustup default stable
       - run: cargo build --release -p onescreen
       - run: Compress-Archive -Path target/release/onescreen.exe -DestinationPath OneScreen-Windows.zip
